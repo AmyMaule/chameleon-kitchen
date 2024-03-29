@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import ConvertedRecipe from "./ConvertedRecipe";
 
@@ -17,14 +17,23 @@ const App = () => {
   // ¼ cup + 2 teaspoons vegetable or canola oil
   // ½ teaspoons ground cinnamon
 
-  const [pastedRecipe, setPastedRecipe] = useState(`   
-  16 oz. cream cheese, room temperature
-  2 eggs, whites and yolks separated at room temperature
-  3/4 c. granulated sugar
-  1/2 tsp salt
-  1 tsp vanilla extract
-  dash of granulated sugar
-  `);
+  // const [pastedRecipe, setPastedRecipe] = useState(`   
+  // 16 oz. cream cheese, room temperature
+  // 2 eggs, whites and yolks separated at room temperature
+  // 3/4 c. granulated sugar
+  // 1/2 tsp salt
+  // 1 tsp vanilla extract
+  // dash of granulated sugar
+  // `);
+
+  const [pastedRecipe, setPastedRecipe] = useState();
+  const textareaRef = useRef();
+
+  const handleSetRecipe = () => {
+    if (textareaRef.current) {
+      setPastedRecipe(textareaRef.current.value);
+    }
+  }
 
   useEffect(() => {
     console.log(pastedRecipe);
@@ -32,8 +41,11 @@ const App = () => {
 
   return (
     <div>
-      <textarea />
-      <ConvertedRecipe pastedRecipe={pastedRecipe} />
+      <textarea ref={textareaRef} />
+      <button onClick={handleSetRecipe}>Convert!</button>
+      {pastedRecipe &&
+        <ConvertedRecipe pastedRecipe={pastedRecipe} />
+      }
     </div>
   )
 }
