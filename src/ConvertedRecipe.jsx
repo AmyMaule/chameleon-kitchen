@@ -6,6 +6,8 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
   const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
 
   useEffect(() => {
+    if (!pastedRecipe.length) return;
+
     let parsedRecipeData;
     const recipeLinesToFetch = pastedRecipe
       .split("\n")
@@ -62,7 +64,6 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
       return Promise.all(json)
     })
     .then(recipeData => {
-      console.log("RECIPE DATA:", recipeData)
       parsedRecipeData = recipeData;
       const recipeDataRequests =  recipeData.map(line => {
         return fetch(`${convertURL}?ingredientName=${line[0].name}&sourceAmount=${line[0].amount}&sourceUnit=${line[0].unit}&targetUnit=grams&apiKey=${import.meta.env.VITE_APIKEY}`)
@@ -79,11 +80,17 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
         .then(convertedRecipeData => {
           const recipe = [];
           convertedRecipeData.forEach((line, i) => {
-            console.log(line)
-            const sourceUnit = `${line.sourceAmount} ${line.sourceUnit}`;
+            // Replace the original measurement with the converted gram amounts - some lines don't have sourceUnits (e.g. 2 eggs)
+            const sourceUnit = line.sourceUnit ? `${line.sourceAmount} ${line.sourceUnit}` : line.sourceAmount;
             let originalRecipeLine = parsedRecipeData[i][0].original;
 
-            // Replace the original measurement with the converted gram amounts
+            // If the original line had a period after the unit (c. for cup or oz. for ounches, etc) remove the period
+            const sourceIndex = originalRecipeLine.indexOf(sourceUnit);
+            if (originalRecipeLine[sourceIndex + sourceUnit.length] === ".") {
+              originalRecipeLine = originalRecipeLine.split("");
+              originalRecipeLine.splice(sourceIndex + sourceUnit.length, 1);
+              originalRecipeLine = originalRecipeLine.join("");
+            }
             let convertedRecipeLine = originalRecipeLine.replace(sourceUnit, `${Math.round(line.targetAmount)} ${line.targetUnit}`);
             recipe.push(convertedRecipeLine);
 
@@ -96,7 +103,7 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
     .catch(errors => {
       errors.forEach(err => console.error(err));
     })
-  }, []);
+  }, [pastedRecipe]);
 
   // useEffect(() => {
   //   console.log(convertedRecipe)
@@ -104,9 +111,12 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
 
   return (
     <div>
-      {convertedRecipe.length && convertedRecipe.map(line => {
-        <div key={line}>{line}</div>
-      })}
+      {convertedRecipe.length 
+        ? convertedRecipe.map(line => {
+            return <div key={line}>{line}</div>
+          })
+        : null
+      }
     </div>
   )
 }
