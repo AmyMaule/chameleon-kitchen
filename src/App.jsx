@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import ConvertedRecipe from "./ConvertedRecipe";
+import ConvertedRecipe from "./components/ConvertedRecipe";
+import Header from "./components/Header";
 
 // target unit from dropdown - initially just use grams
 // have a simple "to metric" option?
@@ -15,16 +16,13 @@ const App = () => {
   // ⅛ teaspoon salt
   // ¼ cup + 2 Tablespoons of milk
   // ¼ cup + 2 teaspoons vegetable or canola oil
-  // ½ teaspoons ground cinnamon
-
-  // const [pastedRecipe, setPastedRecipe] = useState(`   
+  // ½ teaspoons ground cinnamon   
   // 16 oz. cream cheese, room temperature
   // 2 eggs, whites and yolks separated at room temperature
   // 3/4 c. granulated sugar
   // 1/2 tsp salt
   // 1 tsp vanilla extract
   // dash of granulated sugar
-  // `);
 
   const [pastedRecipe, setPastedRecipe] = useState();
   const textareaRef = useRef();
@@ -40,9 +38,11 @@ const App = () => {
   }, [pastedRecipe]);
 
   return (
-    <div>
-      <textarea ref={textareaRef} />
-      <button onClick={handleSetRecipe}>Convert!</button>
+    <div className="app-container">
+      <Header />
+      <div>Paste or type your recipe below:</div>
+      <textarea className="recipe-textarea" ref={textareaRef} />
+      <button className="btn-convert" onClick={handleSetRecipe}>Convert!</button>
       {pastedRecipe &&
         <ConvertedRecipe pastedRecipe={pastedRecipe} />
       }

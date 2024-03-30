@@ -110,12 +110,15 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
   // }, [convertedRecipe])
 
   return (
-    <div>
+    <div className="converted-recipe-container">
       {convertedRecipe.length 
-        ? convertedRecipe.map(line => {
-            return <div key={line}>{line}</div>
-          })
-        : null
+        ? <div className="converted-recipe">
+            <div>Your converted recipe:</div>
+            {convertedRecipe.map(line => {
+              return <div key={line}>{line}</div>
+            })}
+          </div>
+        : <div>Paste or type a recipe into the box to get started</div>
       }
     </div>
   )
