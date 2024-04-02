@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
-import ConvertedRecipe from "./components/ConvertedRecipe";
 import Header from "./components/Header";
+import InputRecipe from "./components/InputRecipe";
+// import Intro from "./components/Intro";
+import OutputRecipe from "./components/OutputRecipe";
 
 // target unit from dropdown - initially just use grams
 // have a simple "to metric" option?
@@ -25,13 +27,6 @@ const App = () => {
   // dash of granulated sugar
 
   const [pastedRecipe, setPastedRecipe] = useState();
-  const textareaRef = useRef();
-
-  const handleSetRecipe = () => {
-    if (textareaRef.current) {
-      setPastedRecipe(textareaRef.current.value);
-    }
-  }
 
   useEffect(() => {
     console.log(pastedRecipe);
@@ -40,12 +35,11 @@ const App = () => {
   return (
     <div className="app-container">
       <Header />
-      <div>Paste or type your recipe below:</div>
-      <textarea className="recipe-textarea" ref={textareaRef} />
-      <button className="btn-convert" onClick={handleSetRecipe}>Convert!</button>
-      {pastedRecipe &&
-        <ConvertedRecipe pastedRecipe={pastedRecipe} />
-      }
+      {/* <Intro /> */}
+      <div className="recipe-section">
+        <InputRecipe setPastedRecipe={setPastedRecipe} />
+        <OutputRecipe pastedRecipe={pastedRecipe} />
+      </div>
     </div>
   )
 }
