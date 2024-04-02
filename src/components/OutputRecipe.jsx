@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-const ConvertedRecipe = ({ pastedRecipe }) => {
-  const [convertedRecipe, setConvertedRecipe] = useState([]);
+const OutputRecipe = ({ pastedRecipe }) => {
+  const [outputRecipe, setOutputRecipe] = useState([]);
   const convertURL = "https://api.spoonacular.com/recipes/convert";
   const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
 
   useEffect(() => {
-    if (!pastedRecipe.length) return;
+    if (!pastedRecipe?.length) return;
 
     let parsedRecipeData;
     const recipeLinesToFetch = pastedRecipe
@@ -43,7 +43,6 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
     const requests = recipeLinesToFetch.map(recipeLine => {
       // TODO if the line is in ounces, don't fetch, but do send a response in the same format as the parsed response
       // this may cause unexpected behavior because the fetch request is a promise?
-
       return fetch(`${parseURL}?ingredientList=${recipeLine}&servings=1&includeNutrition=false&apiKey=${import.meta.env.VITE_APIKEY}`, {
         method: "POST",
         headers: {
@@ -77,9 +76,10 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
           const json = responses.map(response => response.json());
           return Promise.all(json)
         })
-        .then(convertedRecipeData => {
+        .then(outputRecipeData => {
+          console.log(outputRecipeData)
           const recipe = [];
-          convertedRecipeData.forEach((line, i) => {
+          outputRecipeData.forEach((line, i) => {
             // Replace the original measurement with the converted gram amounts - some lines don't have sourceUnits (e.g. 2 eggs)
             const sourceUnit = line.sourceUnit ? `${line.sourceAmount} ${line.sourceUnit}` : line.sourceAmount;
             let originalRecipeLine = parsedRecipeData[i][0].original;
@@ -91,11 +91,11 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
               originalRecipeLine.splice(sourceIndex + sourceUnit.length, 1);
               originalRecipeLine = originalRecipeLine.join("");
             }
-            let convertedRecipeLine = originalRecipeLine.replace(sourceUnit, `${Math.round(line.targetAmount)} ${line.targetUnit}`);
-            recipe.push(convertedRecipeLine);
+            let outputRecipeLine = originalRecipeLine.replace(sourceUnit, `${Math.round(line.targetAmount)} ${line.targetUnit}`);
+            recipe.push(outputRecipeLine);
 
-            // setConvertedRecipe once the entire recipe has been parsed and converted
-            if (i === recipeData.length - 1) setConvertedRecipe(recipe);
+            // setOutputRecipe once the entire recipe has been parsed and converted
+            if (i === recipeData.length - 1) setOutputRecipe(recipe);
           })
         })
       .catch(err => console.log(err))
@@ -106,22 +106,26 @@ const ConvertedRecipe = ({ pastedRecipe }) => {
   }, [pastedRecipe]);
 
   // useEffect(() => {
-  //   console.log(convertedRecipe)
-  // }, [convertedRecipe])
+  //   console.log(outputRecipe)
+  // }, [outputRecipe])
 
   return (
-    <div className="converted-recipe-container">
-      {convertedRecipe.length 
-        ? <div className="converted-recipe">
-            <div>Your converted recipe:</div>
-            {convertedRecipe.map(line => {
-              return <div key={line}>{line}</div>
-            })}
-          </div>
-        : <div>Paste or type a recipe into the box to get started</div>
-      }
+    <div className="output-recipe-section-container">
+      <h3 className="recipe-title">Your converted recipe:</h3>
+      <div className="recipe-container output-recipe-container">
+        {outputRecipe.length 
+          ? <div className="output-recipe">
+              {outputRecipe.map(line => {
+                return <div key={line}>{line}</div>
+              })}
+            </div>
+          : <div>
+              Paste or type a recipe into the box above to get started!
+            </div>
+        }
+      </div>
     </div>
   )
 }
 
-export default ConvertedRecipe;
+export default OutputRecipe;
