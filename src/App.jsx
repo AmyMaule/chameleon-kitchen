@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import Header from "./components/Header";
 import InputRecipe from "./components/InputRecipe";
-// import Intro from "./components/Intro";
+import Intro from "./components/Intro";
 import OutputRecipe from "./components/OutputRecipe";
 
 // target unit from dropdown - initially just use grams
@@ -35,7 +35,7 @@ const App = () => {
   return (
     <div className="app-container">
       <Header />
-      {/* <Intro /> */}
+      <Intro />
       <div className="recipe-section">
         <InputRecipe setPastedRecipe={setPastedRecipe} />
         <OutputRecipe pastedRecipe={pastedRecipe} />

@@ -1,6 +1,53 @@
 .intro-container {
-  display: block;
-  width: 100%;
-  height: calc(100vh - 4rem); // Take into account nav bar height
-  background-color: rgb(206, 255, 187);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4rem;
+  width: calc(100% - 6rem);
+  height: calc(100vh - 6rem);
+  // background-color: rgb(206, 255, 187);
+  padding: 1rem 3rem;
+  background-image: url("/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.intro-title {
+  font-family: "SimplePlan";
+  font-size: 2.25rem;
+}
+
+.intro-text {
+  font-family: "SimplePlan";
+  font-size: 1.75rem;
+  margin-top: 2rem;
+}
+
+.intro-img-container {
+  font-family: "SimplePlan";
+  font-size: 2rem;
+}
+
+.intro-img-text {
+  &:last-of-type {
+    text-align: right;
+  }
+}
+
+.intro-text-green {
+  color: #53d16c;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.intro-text-blue {
+  color: #2862ff;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.intro-img {
+  width: 32rem;
+  // width: 40rem;
+  height: fit-content;
 }
