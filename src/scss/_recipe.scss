@@ -58,3 +58,17 @@
   border: 4px solid rgb(20, 131, 222);
   background-color: rgba(20, 131, 222, 0.05);
 }
+
+// Error
+.recipe-error-container {
+  font-family: "SimplePlan";
+  width: 100%;
+  text-align: center;
+  white-space: pre-wrap;
+}
+
+.recipe-error-text {
+  color: red;
+  font-size: 1.5rem;
+  white-space: pre-wrap;
+}

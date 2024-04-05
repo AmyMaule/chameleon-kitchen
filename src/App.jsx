@@ -26,6 +26,7 @@ const App = () => {
   // 1 tsp vanilla extract
   // dash of granulated sugar
 
+  const [errorMsg, setErrorMsg] = useState("");
   const [pastedRecipe, setPastedRecipe] = useState();
 
   useEffect(() => {
@@ -38,7 +39,20 @@ const App = () => {
       <Intro />
       <div className="recipe-section">
         <InputRecipe setPastedRecipe={setPastedRecipe} />
-        <OutputRecipe pastedRecipe={pastedRecipe} />
+
+        {errorMsg && 
+          <div className="recipe-error-container">
+            <h6 className="recipe-error-text">
+              Oops! An error has occurred:{"\n"}
+              {errorMsg}
+            </h6>
+          </div>
+        }
+        
+        <OutputRecipe 
+          pastedRecipe={pastedRecipe} 
+          setErrorMsg={setErrorMsg}
+        />
       </div>
     </div>
   )
