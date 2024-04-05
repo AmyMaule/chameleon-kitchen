@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const OutputRecipe = ({ pastedRecipe }) => {
+const OutputRecipe = ({ pastedRecipe, setErrorMsg }) => {
   const [outputRecipe, setOutputRecipe] = useState([]);
   const convertURL = "https://api.spoonacular.com/recipes/convert";
   const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
@@ -70,14 +70,20 @@ const OutputRecipe = ({ pastedRecipe }) => {
 
       Promise.all(recipeDataRequests)
         .then(responses => {
-          if (responses.filter(response => !response?.ok).length) {
-            throw responses.map(response => Error(response.statusText));
-          }
           const json = responses.map(response => response.json());
-          return Promise.all(json)
+          return Promise.all(json);
         })
         .then(outputRecipeData => {
-          console.log(outputRecipeData)
+          const failedRequests = outputRecipeData.filter(response => !response?.ok);
+          if (failedRequests.length) {
+            failedRequests.forEach(response => {
+              throw new Error(response.message);
+            });
+          }
+
+          // Erase any previous errors caused by failed requests
+          setErrorMsg("");
+          
           const recipe = [];
           outputRecipeData.forEach((line, i) => {
             // Replace the original measurement with the converted gram amounts - some lines don't have sourceUnits (e.g. 2 eggs)
@@ -98,10 +104,21 @@ const OutputRecipe = ({ pastedRecipe }) => {
             if (i === recipeData.length - 1) setOutputRecipe(recipe);
           })
         })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log(err);
+
+        // Set an error message to prompt the user to update their recipe
+        console.log(err.message)
+        if (err.message.startsWith("Your daily points limit of 150 has been reached.")) {
+          setErrorMsg("The API limit has been reached. Please try again tomorrow.")
+        } else {
+          setErrorMsg(err.message);
+        }
+      })
     })
     .catch(errors => {
       errors.forEach(err => console.error(err));
+      setErrorMsg("The API limit has been reached. Please try again tomorrow.")
     })
   }, [pastedRecipe]);
 
