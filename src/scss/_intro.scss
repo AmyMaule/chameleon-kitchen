@@ -1,15 +1,20 @@
+.intro-background-img-container {
+  width: 100%;
+  background-image: url("/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
 .intro-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 4rem;
   width: calc(100% - 6rem);
+  max-width: 150rem;
   height: calc(100vh - 6rem);
-  // background-color: rgb(206, 255, 187);
   padding: 1rem 3rem;
-  background-image: url("/bg.jpg");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+  margin: 0 auto;
 }
 
 .intro-title {
