@@ -1,7 +1,50 @@
 .btn-convert {
-  font-size: 1.75rem;
+  position: relative;
+  font-family: "SimplePlan";
+  font-size: 2.75rem;
+  color: $color-text;
   width: fit-content;
-  cursor: pointer;
+  background-image: url("/header-bg.png");
+  background-size: 400%;
+  background-position: 30%;
+  border: 2px solid $color-primary-highlight;
+  border-radius: 0.5rem;
   padding: 0.75rem 2rem;
   margin: 2rem auto;
+  cursor: pointer;
+  transition: all 300ms ease;
+  --webkit-transition: all 300ms ease;
+  
+  &:focus-visible {
+    outline: 2px solid rgb(24, 226, 135);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.3);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transition: all 300ms ease;
+    --webkit-transition: all 300ms ease;
+  }
+
+  &:hover {
+    box-shadow: 0 0.5rem 1rem rgba(136, 195, 117, 0.2);
+    transition: all 300ms ease;
+    --webkit-transition: all 300ms ease;
+    
+    &::after {
+      background-color: rgba(255, 255, 255, 0);
+      transition: all 300ms ease;
+      --webkit-transition: all 300ms ease;
+    }
+  }
+
+  span {
+    position: relative;
+    z-index: 5;
+  }
 }
