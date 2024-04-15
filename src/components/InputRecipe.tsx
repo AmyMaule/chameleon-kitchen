@@ -1,7 +1,11 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 
-const InputRecipe = ({ setPastedRecipe }) => {
-  const textareaRef = useRef();
+type InputRecipeProps = {
+  setPastedRecipe: Function
+}
+
+const InputRecipe = ({ setPastedRecipe }: InputRecipeProps) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSetRecipe = () => {
     if (textareaRef.current) {

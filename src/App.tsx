@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import Header from "./components/Header";
 import InputRecipe from "./components/InputRecipe";
@@ -27,7 +27,7 @@ const App = () => {
   // dash of granulated sugar
 
   const [errorMsg, setErrorMsg] = useState("");
-  const [pastedRecipe, setPastedRecipe] = useState();
+  const [pastedRecipe, setPastedRecipe] = useState("");
 
   useEffect(() => {
     console.log(pastedRecipe);
