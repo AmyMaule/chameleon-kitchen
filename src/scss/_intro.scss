@@ -10,6 +10,10 @@
   margin: 0 auto;
 }
 
+.intro-text-container {
+  color: $color-text;
+}
+
 .intro-title {
   font-family: "SimplePlan";
   font-size: 2.25rem;
@@ -27,19 +31,21 @@
 }
 
 .intro-img-text {
+  color: $color-text;
+  
   &:last-of-type {
     text-align: right;
   }
 }
 
 .intro-text-green {
-  color: #53d16c;
+  color: $color-primary;
   font-weight: bold;
   font-size: 2rem;
 }
 
 .intro-text-blue {
-  color: #2862ff;
+  color: $color-secondary;
   font-weight: bold;
   font-size: 2rem;
 }
