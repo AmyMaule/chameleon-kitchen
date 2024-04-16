@@ -7,7 +7,7 @@ type InputRecipeProps = {
 const InputRecipe = ({ setPastedRecipe }: InputRecipeProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSetRecipe = () => {
+  const handleSetRecipe: () => void = () => {
     if (textareaRef.current) {
       setPastedRecipe(textareaRef.current.value);
     }
