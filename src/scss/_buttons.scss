@@ -22,7 +22,7 @@
   &::after {
     content: "";
     position: absolute;
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.35);
     width: 100%;
     height: 100%;
     top: 0;
@@ -37,7 +37,7 @@
     --webkit-transition: all 300ms ease;
     
     &::after {
-      background-color: rgba(255, 255, 255, 0);
+      background-color: rgba(255, 255, 255, 0.1);
       transition: all 300ms ease;
       --webkit-transition: all 300ms ease;
     }
