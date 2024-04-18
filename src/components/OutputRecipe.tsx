@@ -5,11 +5,30 @@ type OutputRecipeProps = {
   setErrorMsg: Function
 }
 
+type OutputRecipeFormat = {
+  answer: string,
+  sourceAmount: number,
+  sourceUnit: string,
+  targetAmount: number,
+  targetUnit: "grams",
+  type: "CONVERSION"
+}
+
 const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
   const [outputRecipe, setOutputRecipe] = useState<string[]>([]);
   const convertURL = "https://api.spoonacular.com/recipes/convert";
   const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
   const apiKey: string = import.meta.env.VITE_APIKEY;
+
+  const getSourceUnit = (originalRecipeLine: string, line: OutputRecipeFormat): string => {
+    // If the original recipe was typed with no space between the amount and unit (e.g. 1cup) ensure this is replaced correctly
+    const spaceChar = originalRecipeLine.includes(`${line.sourceAmount} ${line.sourceUnit}`) ? " " : "";
+
+    // Replace the original measurement with the converted gram amounts - some lines don't have sourceUnits (e.g. 2 eggs)
+    return line.sourceUnit 
+      ? `${line.sourceAmount}${spaceChar}${line.sourceUnit}` 
+      : line.sourceAmount.toString();
+  }
 
   useEffect(() => {
     if (!pastedRecipe?.length) return;
@@ -47,8 +66,6 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
       })
 
     const requests = recipeLinesToFetch.map((recipeLine: string) => {
-      // TODO if the line is in ounces, don't fetch, but do send a response in the same format as the parsed response
-      // this may cause unexpected behavior because the fetch request is a promise?
       return fetch(`${parseURL}?ingredientList=${recipeLine}&servings=1&includeNutrition=false&apiKey=${apiKey}`, {
         method: "POST",
         headers: {
@@ -70,12 +87,33 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
     })
     .then(parsedRecipeData => {
       const recipeDataRequests =  parsedRecipeData.map(line => {
-        return fetch(`${convertURL}?ingredientName=${line[0].name}&sourceAmount=${line[0].amount}&sourceUnit=${line[0].unit}&targetUnit=grams&apiKey=${apiKey}`)
+        // If the line is in ounces, there is no need to fetch as conversion is purely mathematical
+        // Ensure response is in the same format as the parsed response for converted ingredients
+        if (line[0].unitShort === "oz") {
+            const sourceAmount = line[0].amount;
+            const targetAmount = Math.round(28.3495 * sourceAmount);
+            const convertedLine: OutputRecipeFormat = {
+              answer: `${sourceAmount} ${line[0].unit} of ${line[0].name} are ${targetAmount} grams.`,
+              sourceAmount: sourceAmount,
+              sourceUnit: line[0].unit,
+              targetAmount: targetAmount,
+              targetUnit: "grams",
+              type: "CONVERSION"
+            }
+            return convertedLine;
+        } else {
+          return fetch(`${convertURL}?ingredientName=${line[0].name}&sourceAmount=${line[0].amount}&sourceUnit=${line[0].unit}&targetUnit=grams&apiKey=${apiKey}`)
+        }
       });
 
       Promise.all(recipeDataRequests)
         .then(responses => {
-          const json = responses.map(response => response.json());
+          // If the response is of type OutputRecipeFormat, it is already in its final format 
+          const json = responses.map((response: Response | OutputRecipeFormat) => {
+            return "status" in response
+              ? response.json()
+              : response;
+          });
           return Promise.all(json);
         })
         .then(outputRecipeData => {
@@ -92,9 +130,8 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
           
           const recipe: string[] = [];
           outputRecipeData.forEach((line, i) => {
-            // Replace the original measurement with the converted gram amounts - some lines don't have sourceUnits (e.g. 2 eggs)
-            const sourceUnit = line.sourceUnit ? `${line.sourceAmount} ${line.sourceUnit}` : line.sourceAmount;
             let originalRecipeLine = parsedRecipeData[i][0].original;
+            const sourceUnit: string = getSourceUnit(originalRecipeLine, line);
 
             // If the original line had a period after the unit (c. for cup or oz. for ounches, etc) remove the period
             const sourceIndex = originalRecipeLine.indexOf(sourceUnit);
@@ -112,11 +149,13 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
       .catch(err => {
         console.log(err);
 
-        // Set an error message to prompt the user to update their recipe
-        if (err.message?.startsWith("Your daily points limit")) {
-          setErrorMsg("The API limit has been reached. Please try again tomorrow.")
-        } else {
-          setErrorMsg(err.message);
+        if (err instanceof Error) {
+          // Set an error message to prompt the user to update their recipe
+          if (err.message.startsWith("Your daily points limit")) {
+            setErrorMsg("The API limit has been reached. Please try again tomorrow.")
+          } else {
+            setErrorMsg(err.message);
+          }
         }
       })
     })
@@ -132,8 +171,8 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
       <div className="recipe-container output-recipe-container">
         {outputRecipe.length 
           ? <div className="output-recipe">
-              {outputRecipe.map(line => {
-                return <div key={line}>{line}</div>
+              {outputRecipe.map((line, i) => {
+                return <div key={line + i}>{line}</div>
               })}
             </div>
           : <div>
