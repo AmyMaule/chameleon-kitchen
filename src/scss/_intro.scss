@@ -2,35 +2,64 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 4rem;
-  width: calc(100% - 6rem);
+  gap: 6rem;
+  width: calc(100% - 8rem);
   max-width: 150rem;
-  height: calc(100vh - 6rem);
-  padding: 1rem 3rem;
+  height: calc(100vh - 12rem);
+  padding: 4rem;
   margin: 0 auto;
 }
 
 .intro-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
   color: $color-text;
 }
 
 .intro-title {
   font-family: "SimplePlan";
-  font-size: 2.25rem;
+  font-size: 2.75rem;
+  z-index: 5;
+}
+
+.intro-title-underline {
+  position: relative;
+
+  &::after {
+    position: absolute;
+    content: "";
+    width: calc(100% + 0.5rem);
+    height: 1rem;
+    background: linear-gradient(
+      90deg,
+      rgba($color-primary, 0.6) 25%, 
+      rgba($color-primary-highlight, 0.6) 40%, 
+      rgba($color-secondary-highlight, 0.6) 80%, 
+      rgba($color-secondary, 0.6) 100%
+    );
+    border-radius: 2px;
+    bottom: 0.35rem;
+    left: -0.25rem; // adjust for width
+    z-index: -1;
+  }
 }
 
 .intro-text {
   font-family: "SimplePlan";
-  font-size: 1.75rem;
-  margin-top: 2rem;
+  font-size: 2rem;
+}
+
+.intro-hr {
+  display: none;
 }
 
 .intro-img-container {
   font-family: "SimplePlan";
-  font-size: 2rem;
 }
 
 .intro-img-text {
+  font-size: 2.25rem;
   color: $color-text;
   
   &:last-of-type {
@@ -41,17 +70,17 @@
 .intro-text-green {
   color: $color-primary;
   font-weight: bold;
-  font-size: 2rem;
+  font-size: inherit;
 }
 
 .intro-text-blue {
   color: $color-secondary;
   font-weight: bold;
-  font-size: 2rem;
+  font-size: inherit;
 }
 
 .intro-img {
-  width: 32rem;
-  // width: 40rem;
+  display: block;
+  width: 35rem;
   height: fit-content;
 }

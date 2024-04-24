@@ -1,8 +1,11 @@
 @import "reset";
 @import "variables";
 
-// components
+// Components
 @import "buttons";
 @import "header";
 @import "intro";
 @import "recipe";
+
+// Media queries
+@import "media";
