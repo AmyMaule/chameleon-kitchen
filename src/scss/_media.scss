@@ -1,0 +1,157 @@
+@media screen and (max-width: 1630px) {
+  .intro-title-underline {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 1300px) {
+  .intro-text-container,
+  .intro-img-container {
+    min-width: calc(50% - 4rem); // padding
+    width: calc(50% - 4rem);
+  }
+
+  .intro-text-container {
+    gap: 2rem;
+  }
+
+
+  .intro-title {
+    font-size: 2.25rem;
+  }
+  
+  .intro-text {
+    font-size: 1.75rem;
+  }
+
+  .intro-title-underline {
+    position: relative;
+  
+    &::after {
+      height: 0.7rem;
+    }
+  }
+
+  .intro-img {
+    width: 100%;
+  }
+}
+
+// Tablet screens
+@media screen and (max-width: 1050px) {
+  .intro-container {
+    flex-direction: column;
+    gap: 2rem;
+    height: unset;
+    margin: 0 auto;
+  }
+
+  .intro-text-container {
+    width: 100%;
+  }
+
+  .intro-title-underline {
+    display: inline;
+  }
+
+  .intro-hr {
+    display: block;
+    width: 100%;
+    max-width: 30rem;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      $color-primary 25%, 
+      $color-primary-highlight 40%, 
+      $color-secondary-highlight 80%, 
+      $color-secondary 100%
+    );
+  }
+  
+  .intro-img-container {
+    max-width: 30rem;
+    width: unset;
+  }
+
+  .intro-img-text {
+    font-size: 1.75rem;
+  }
+}
+
+@media screen and (max-width: 815px) {
+  .header-title {
+    font-size: 2.5rem;
+  }
+
+  .intro-title {
+    text-align: center;
+  }
+
+  .intro-title-underline {
+    display: block;
+    font-size: 2.5rem;
+    width: fit-content;
+    margin: 0 auto;
+
+    &::after {
+      height: 1rem;
+    }
+  }  
+}
+
+// Mobile screens
+@media screen and (max-width: 650px) {
+  .intro-container {
+    width: calc(100% - 4rem);
+    padding: 2rem;
+  }
+
+  .intro-title {
+    font-size: 2rem;
+  }
+
+  .intro-title-underline {
+    font-size: 2rem;
+
+    &::after {
+      height: 0.7rem;
+    }
+  }
+
+  .intro-text {
+    font-size: 1.5rem;
+    text-align: justify;
+    line-height: 1.2;
+  }
+
+  .intro-img-text {
+    font-size: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .header-title {
+    font-size: 2.1rem;
+  }
+
+  .header-img {
+    height: 3.75rem;
+  }
+
+  .intro-container {
+    width: calc(100% - 3rem);
+    padding: 1.5rem;
+  }
+
+  .intro-title,
+  .intro-title-underline {
+    font-size: 1.75rem;
+  }
+
+  .intro-text {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+}

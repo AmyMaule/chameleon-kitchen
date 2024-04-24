@@ -37,8 +37,14 @@
 .header-img {
   position: relative;
   height: 4.6rem;
+  filter: drop-shadow(0.1rem 0.1rem 0.1rem rgb(124, 124, 124));
   transform: rotate(5deg);
   z-index: 5;
   top: 0.5rem;
   margin-left: 0.5rem;
+}
+
+.header-positioning {
+  height: 4rem;
+  width: 100%;
 }

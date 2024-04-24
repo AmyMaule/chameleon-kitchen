@@ -4,7 +4,7 @@
   align-items: center;
   width: calc(100% - 6rem);
   padding: 3rem;
-  margin: 0 auto;
+  margin: 0 auto 4rem auto;
 }
 
 .recipe-title {
@@ -58,7 +58,7 @@
 
 .output-recipe-container {
   border: 2px solid $color-secondary;
-  outline: 2px solid rgb(83, 178, 255);
+  outline: 2px solid $color-secondary-highlight;
   background-color: rgba(246, 247, 252, 0.93);
 }
 
