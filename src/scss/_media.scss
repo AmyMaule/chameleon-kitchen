@@ -17,7 +17,6 @@
     gap: 2rem;
   }
 
-
   .intro-title {
     font-size: 2.25rem;
   }
@@ -36,6 +35,10 @@
 
   .intro-img {
     width: 100%;
+  }
+
+  .recipe-title {
+    font-size: 1.75rem;
   }
 }
 
@@ -77,6 +80,10 @@
 
   .intro-img-text {
     font-size: 1.75rem;
+  }
+
+  .output-recipe-section-container {
+    margin: 1rem 0 0 0;
   }
 }
 
@@ -126,8 +133,27 @@
     line-height: 1.2;
   }
 
+  .recipe-title {
+    font-size: 1.5rem;
+  }
+
   .intro-img-text {
     font-size: 1.5rem;
+  }
+
+  .recipe-section {
+    width: calc(100% - 4rem);
+    padding: 2rem;
+  }
+
+  .recipe-container {
+    font-size: 1.3rem;
+  }
+
+  .btn-convert {
+    font-size: 2rem;
+    padding: 0.25rem 1.5rem;
+    margin: 1.5rem auto;
   }
 }
 
@@ -153,5 +179,9 @@
   .intro-text {
     font-size: 1.4rem;
     text-align: center;
+  }
+
+  .recipe-title {
+    font-size: 1.4rem;
   }
 }
