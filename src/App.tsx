@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 
+import Footer from "./components/Footer";
 import Header from "./components/Header";
 import InputRecipe from "./components/InputRecipe";
 import Intro from "./components/Intro";
@@ -54,6 +55,7 @@ const App = () => {
           setErrorMsg={setErrorMsg}
         />
       </div>
+      <Footer />
     </div>
   )
 }
