@@ -24,7 +24,7 @@ const ConversionOptions = ({ setSelectedOptions }: ConversionOptionsProps) => {
         />
       </label>
       <label className="conversion-option-label">
-        Convert teaspoons, tablespoons, etc
+        {window.innerWidth > 380 ? "Convert teaspoons, tablespoons, etc." : "Convert tea/tablespoons, etc."}
         <input
           className="conversion-option-checkbox"
           id="tsp"
