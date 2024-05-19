@@ -1,6 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-import { SelectedOptionsType } from "../types";
+import {
+  OutputRecipeFormat,
+  RecipeLineType, 
+  SelectedOptionsType,
+} from "../types";
 
 type OutputRecipeProps = {
   converting: boolean,
@@ -10,29 +14,23 @@ type OutputRecipeProps = {
   setErrorMsg: Function
 }
 
-type RecipeLineType = {
-  amount: number,
-  unit: string,
-  name: string,
-}
-
-type OutputRecipeFormat = {
-  answer: string,
-  sourceAmount: number,
-  sourceUnit: string,
-  targetAmount: number,
-  targetUnit: string,
-  type: "CONVERSION"
-}
-
 const OutputRecipe = ({ converting, pastedRecipe, selectedOptions, setErrorMsg, setConverting }: OutputRecipeProps) => {
   const [outputRecipe, setOutputRecipe] = useState<string[]>([]);
   const convertURL = "https://api.spoonacular.com/recipes/convert";
   const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
   const apiKey: string = import.meta.env.VITE_APIKEY;
-
+  const outputRecipeRef = useRef<HTMLDivElement>(null);
+  
   // Ensure eggs are correctly converted and things like 'eggplant' are not included in egg conversion
-  const eggVariants = ["egg", "eggs", "egg white", "egg whites", "egg yolk", "egg yolks"];
+  const isEgg = (recipeLine: string) => {
+    const eggVariants = ["egg", "eggs", "egg white", "egg whites", "egg yolk", "egg yolks"];
+    return eggVariants.includes(recipeLine?.toLowerCase());
+  }
+
+  const isSpoonMeasure = (recipeLine: string) => {
+    const spoonMeasureVariants = ["tsp", "tbsp"];
+    return spoonMeasureVariants.includes(recipeLine?.toLowerCase());
+  }
 
   // nonConvertedOutput deals with recipe lines that don't need to be converted from their original units
   const nonConvertedOutput = (recipeLine: RecipeLineType, targetAmount: number, targetUnit: string) => {
@@ -123,7 +121,8 @@ const OutputRecipe = ({ converting, pastedRecipe, selectedOptions, setErrorMsg, 
           const targetAmount = Math.round(28.3495 * sourceAmount);
           return (nonConvertedOutput(line[0], targetAmount, "grams"));
           // If the user doesn't want to convert tsp/tbsp/eggs, leave them as they are
-        } else if (!selectedOptions.tsp || (!selectedOptions.eggs && eggVariants.includes(line[0].name))) {
+        } else if ((!selectedOptions.tsp && isSpoonMeasure(line[0].unitShort)) || 
+                   (!selectedOptions.eggs && isEgg(line[0].name))) {
           return (nonConvertedOutput(line[0], sourceAmount, line[0].unit));
         } else {
           return fetch(`${convertURL}?ingredientName=${line[0].name}&sourceAmount=${line[0].amount}&sourceUnit=${line[0].unit}&targetUnit=grams&apiKey=${apiKey}`)
@@ -169,7 +168,12 @@ const OutputRecipe = ({ converting, pastedRecipe, selectedOptions, setErrorMsg, 
             recipe.push(outputRecipeLine);
             // setOutputRecipe once the entire recipe has been parsed and converted
             if (i === parsedRecipeData.length - 1) setOutputRecipe(recipe);
-          })
+          });
+
+          // scroll to output container once conversion is complete
+          if (outputRecipeRef.current) {
+            window.scrollTo({ top: outputRecipeRef.current.offsetTop, behavior: "smooth" });
+          }
         })
       .catch(err => {
         console.log(err);
@@ -191,7 +195,7 @@ const OutputRecipe = ({ converting, pastedRecipe, selectedOptions, setErrorMsg, 
   }, [converting]);
 
   return (
-    <div className="output-recipe-section-container">
+    <div className="output-recipe-section-container" ref={outputRecipeRef}>
       <h3 className="recipe-title">Your converted recipe:</h3>
       <div className="recipe-container output-recipe-container">
         {outputRecipe.length 
