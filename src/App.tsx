@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
 
+import { SelectedOptionsType } from "./types";
+
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import InputRecipe from "./components/InputRecipe";
 import Intro from "./components/Intro";
 import OutputRecipe from "./components/OutputRecipe";
 
-// target unit from dropdown - initially just use grams
-// have a simple "to metric" option?
-// Have a button "convert eggs" if eggs are detected in the text? Most people probably don't want the eggs in grams.
-// have a button to convert teaspoons/tablespoons or leave them as they are
-// for ounces, don't parse or convert them, just do an inplace replace.
+// TO DO: target unit from dropdown - initially just use grams
 
 const App = () => {
   // ¾ cup all-purpose flour
@@ -27,8 +25,13 @@ const App = () => {
   // 1 tsp vanilla extract
   // dash of granulated sugar
 
+  const [converting, setConverting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [pastedRecipe, setPastedRecipe] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptionsType>({
+    eggs: false,
+    tsp: false
+  });
 
   useEffect(() => {
     console.log(pastedRecipe);
@@ -39,7 +42,11 @@ const App = () => {
       <Header />
       <Intro />
       <div className="recipe-section">
-        <InputRecipe setPastedRecipe={setPastedRecipe} />
+        <InputRecipe
+          setPastedRecipe={setPastedRecipe} 
+          setSelectedOptions={setSelectedOptions}
+          setConverting={setConverting}
+        />
 
         {errorMsg && 
           <div className="recipe-error-container">
@@ -51,7 +58,10 @@ const App = () => {
         }
         
         <OutputRecipe 
+          converting={converting}
           pastedRecipe={pastedRecipe} 
+          selectedOptions={selectedOptions}
+          setConverting={setConverting}
           setErrorMsg={setErrorMsg}
         />
       </div>

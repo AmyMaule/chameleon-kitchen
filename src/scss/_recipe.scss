@@ -46,6 +46,30 @@
   }
 }
 
+.conversion-options-container {
+  font-family: "SimplePlan";
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 3rem;
+  padding: 1.5rem 0;
+}
+
+.conversion-option-label {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  -webkit-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+
+.conversion-option-checkbox {
+  width: 1.25rem;
+}
+
 // After conversion
 .output-recipe-section-container {
   font-family: "SimplePlan";

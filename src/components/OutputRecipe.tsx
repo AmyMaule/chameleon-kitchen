@@ -1,8 +1,19 @@
 import { useState, useEffect } from "react";
 
+import { SelectedOptionsType } from "../types";
+
 type OutputRecipeProps = {
+  converting: boolean,
   pastedRecipe: string,
+  selectedOptions: SelectedOptionsType,
+  setConverting: Function,
   setErrorMsg: Function
+}
+
+type RecipeLineType = {
+  amount: number,
+  unit: string,
+  name: string,
 }
 
 type OutputRecipeFormat = {
@@ -10,15 +21,32 @@ type OutputRecipeFormat = {
   sourceAmount: number,
   sourceUnit: string,
   targetAmount: number,
-  targetUnit: "grams",
+  targetUnit: string,
   type: "CONVERSION"
 }
 
-const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
+const OutputRecipe = ({ converting, pastedRecipe, selectedOptions, setErrorMsg, setConverting }: OutputRecipeProps) => {
   const [outputRecipe, setOutputRecipe] = useState<string[]>([]);
   const convertURL = "https://api.spoonacular.com/recipes/convert";
   const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
   const apiKey: string = import.meta.env.VITE_APIKEY;
+
+  // Ensure eggs are correctly converted and things like 'eggplant' are not included in egg conversion
+  const eggVariants = ["egg", "eggs", "egg white", "egg whites", "egg yolk", "egg yolks"];
+
+  // nonConvertedOutput deals with recipe lines that don't need to be converted from their original units
+  const nonConvertedOutput = (recipeLine: RecipeLineType, targetAmount: number, targetUnit: string) => {
+    const sourceAmount = recipeLine.amount;
+    const convertedLine: OutputRecipeFormat = {
+      answer: `${sourceAmount} ${recipeLine.unit} of ${recipeLine.name} are ${targetAmount} grams.`,
+      sourceAmount: sourceAmount,
+      sourceUnit: recipeLine.unit,
+      targetAmount: targetAmount,
+      targetUnit: targetUnit,
+      type: "CONVERSION"
+    }
+    return convertedLine;
+  }
 
   const getSourceUnit = (originalRecipeLine: string, line: OutputRecipeFormat): string => {
     // If the original recipe was typed with no space between the amount and unit (e.g. 1cup) ensure this is replaced correctly
@@ -31,7 +59,8 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
   }
 
   useEffect(() => {
-    if (!pastedRecipe?.length) return;
+    if (!converting || !pastedRecipe?.length) return;
+    setConverting(false);
 
     const recipeLinesToFetch = pastedRecipe
       .split("\n")
@@ -87,20 +116,15 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
     })
     .then(parsedRecipeData => {
       const recipeDataRequests =  parsedRecipeData.map(line => {
+        const sourceAmount = line[0].amount;
         // If the line is in ounces, there is no need to fetch as conversion is purely mathematical
         // Ensure response is in the same format as the parsed response for converted ingredients
         if (line[0].unitShort === "oz") {
-            const sourceAmount = line[0].amount;
-            const targetAmount = Math.round(28.3495 * sourceAmount);
-            const convertedLine: OutputRecipeFormat = {
-              answer: `${sourceAmount} ${line[0].unit} of ${line[0].name} are ${targetAmount} grams.`,
-              sourceAmount: sourceAmount,
-              sourceUnit: line[0].unit,
-              targetAmount: targetAmount,
-              targetUnit: "grams",
-              type: "CONVERSION"
-            }
-            return convertedLine;
+          const targetAmount = Math.round(28.3495 * sourceAmount);
+          return (nonConvertedOutput(line[0], targetAmount, "grams"));
+          // If the user doesn't want to convert tsp/tbsp/eggs, leave them as they are
+        } else if (!selectedOptions.tsp || (!selectedOptions.eggs && eggVariants.includes(line[0].name))) {
+          return (nonConvertedOutput(line[0], sourceAmount, line[0].unit));
         } else {
           return fetch(`${convertURL}?ingredientName=${line[0].name}&sourceAmount=${line[0].amount}&sourceUnit=${line[0].unit}&targetUnit=grams&apiKey=${apiKey}`)
         }
@@ -140,7 +164,8 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
               originalRecipeLine.splice(sourceIndex + sourceUnit.length, 1);
               originalRecipeLine = originalRecipeLine.join("");
             }
-            let outputRecipeLine = originalRecipeLine.replace(sourceUnit, `${Math.round(line.targetAmount)} ${line.targetUnit}`);
+            const roundedTargetAmount = line.targetUnit === "grams" ? Math.round(line.targetAmount) : line.targetAmount;
+            let outputRecipeLine = originalRecipeLine.replace(sourceUnit, `${roundedTargetAmount} ${line.targetUnit}`);
             recipe.push(outputRecipeLine);
             // setOutputRecipe once the entire recipe has been parsed and converted
             if (i === parsedRecipeData.length - 1) setOutputRecipe(recipe);
@@ -163,7 +188,7 @@ const OutputRecipe = ({ pastedRecipe, setErrorMsg }: OutputRecipeProps) => {
       errors.forEach((err: unknown) => console.log(err));
       setErrorMsg("The API limit has been reached. Please try again tomorrow.")
     })
-  }, [pastedRecipe]);
+  }, [converting]);
 
   return (
     <div className="output-recipe-section-container">
