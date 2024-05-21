@@ -1,20 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 
 import {
+  ConvertToType,
   OutputRecipeFormat,
   RecipeLineType, 
   SelectedOptionsType,
 } from "../types";
 
+import { convertCupsToFraction } from "../utilities";
+
 type OutputRecipeProps = {
   converting: boolean,
+  convertTo: ConvertToType,
   pastedRecipe: string,
   selectedOptions: SelectedOptionsType,
-  setConverting: Function,
-  setErrorMsg: Function
+  setConverting: React.Dispatch<React.SetStateAction<boolean>>,
+  setErrorMsg: React.Dispatch<React.SetStateAction<string>>
 }
 
-const OutputRecipe = ({ converting, pastedRecipe, selectedOptions, setErrorMsg, setConverting }: OutputRecipeProps) => {
+const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, setErrorMsg, setConverting }: OutputRecipeProps) => {
   const [outputRecipe, setOutputRecipe] = useState<string[]>([]);
   const convertURL = "https://api.spoonacular.com/recipes/convert";
   const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
@@ -125,7 +129,7 @@ const OutputRecipe = ({ converting, pastedRecipe, selectedOptions, setErrorMsg, 
                    (!selectedOptions.eggs && isEgg(line[0].name))) {
           return (nonConvertedOutput(line[0], sourceAmount, line[0].unit));
         } else {
-          return fetch(`${convertURL}?ingredientName=${line[0].name}&sourceAmount=${line[0].amount}&sourceUnit=${line[0].unit}&targetUnit=grams&apiKey=${apiKey}`)
+          return fetch(`${convertURL}?ingredientName=${line[0].name}&sourceAmount=${line[0].amount}&sourceUnit=${line[0].unit}&targetUnit=${convertTo}&apiKey=${apiKey}`)
         }
       });
 
@@ -163,8 +167,15 @@ const OutputRecipe = ({ converting, pastedRecipe, selectedOptions, setErrorMsg, 
               originalRecipeLine.splice(sourceIndex + sourceUnit.length, 1);
               originalRecipeLine = originalRecipeLine.join("");
             }
-            const roundedTargetAmount = line.targetUnit === "grams" ? Math.round(line.targetAmount) : line.targetAmount;
-            let outputRecipeLine = originalRecipeLine.replace(sourceUnit, `${roundedTargetAmount} ${line.targetUnit}`);
+           
+            let amountPlusUnit = `${line.targetAmount} ${line.targetUnit}`;
+            if (line.targetUnit === "cups") {
+              amountPlusUnit = convertCupsToFraction(line.targetAmount);
+            } else if (line.targetUnit === "grams") {
+              amountPlusUnit = `${Math.round(line.targetAmount)} ${line.targetUnit}`;
+            };
+            let outputRecipeLine = originalRecipeLine.replace(sourceUnit, `${amountPlusUnit}`);
+
             recipe.push(outputRecipeLine);
             // setOutputRecipe once the entire recipe has been parsed and converted
             if (i === parsedRecipeData.length - 1) setOutputRecipe(recipe);

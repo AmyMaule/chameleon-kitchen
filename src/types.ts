@@ -16,3 +16,5 @@ export type OutputRecipeFormat = {
   targetUnit: string,
   type: "CONVERSION"
 }
+
+export type ConvertToType = "cups" | "grams";
