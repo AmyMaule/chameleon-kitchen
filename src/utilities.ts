@@ -1,6 +1,15 @@
-export const convertCupsToFraction = (amount: number) => {
-  let recipeLine = "";
+// use Euclidean algorithm to get highest common factor of numerator and denominator
+function highestCommonFactor(numerator: number, denominator: number) {
+  while (denominator !== 0) {
+    let remainder = numerator % denominator;
+    numerator = denominator;
+    denominator = remainder;
+  }
+  // Return the last non-zero remainder as the highest common factor
+  return numerator;
+}
 
+  export const convertCupsToFraction = (amount: number) => {
   const integer = Math.floor(amount);
   // round remaining decimal to nearest 1/8 or 1/3 as cups are multiples of either 1/8 or 1/3
   const fractionToNearestEighth = Math.round((amount - integer) * 8) / 8;
@@ -11,23 +20,13 @@ export const convertCupsToFraction = (amount: number) => {
     ? fractionToNearestThird
     : fractionToNearestEighth
 
+  // if amount is an integer
   if (closestFraction === 0) {
-    recipeLine = `${integer} cups`;
+    return integer > 1 ? `${integer} cups` : `${integer} cup`;
   }
 
   let denominator = closestFraction === fractionToNearestEighth ? 8 : 3;
   let numerator = Math.round(closestFraction * denominator);
-
-  // use Euclidean algorithm to get highest common factor of numerator and denominator
-  function highestCommonFactor(numerator: number, denominator: number) {
-    while (denominator !== 0) {
-      let remainder = numerator % denominator;
-      numerator = denominator;
-      denominator = remainder;
-    }
-    // Return the last non-zero remainder as the highest common factor
-    return numerator;
-  }
 
   let divisor = highestCommonFactor(numerator, denominator);
   numerator /= divisor;
