@@ -1,7 +1,7 @@
 import { SelectedOptionsType } from '../types';
 
 type ConversionOptionsProps = {
-  setSelectedOptions: Function
+  setSelectedOptions: React.Dispatch<React.SetStateAction<SelectedOptionsType>>
 }
 
 
