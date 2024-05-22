@@ -7,7 +7,12 @@ import {
   SelectedOptionsType,
 } from "../types";
 
-import { convertCupsToFraction } from "../utilities";
+import { 
+  decimalToFraction,
+  fractionUnits,
+  isEgg,
+  isSpoonMeasure
+} from "../utilities";
 
 type OutputRecipeProps = {
   converting: boolean,
@@ -25,17 +30,6 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
   const apiKey: string = import.meta.env.VITE_APIKEY;
   const outputRecipeRef = useRef<HTMLDivElement>(null);
   
-  // Ensure eggs are correctly converted and things like 'eggplant' are not included in egg conversion
-  const isEgg = (recipeLine: string) => {
-    const eggVariants = ["egg", "eggs", "egg white", "egg whites", "egg yolk", "egg yolks"];
-    return eggVariants.includes(recipeLine?.toLowerCase());
-  }
-
-  const isSpoonMeasure = (recipeLine: string) => {
-    const spoonMeasureVariants = ["tsp", "tbsp"];
-    return spoonMeasureVariants.includes(recipeLine?.toLowerCase());
-  }
-
   // nonConvertedOutput deals with recipe lines that don't need to be converted from their original units
   const nonConvertedOutput = (recipeLine: RecipeLineType, targetAmount: number, targetUnit: string) => {
     const sourceAmount = recipeLine.amount;
@@ -119,9 +113,9 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
     .then(parsedRecipeData => {
       const recipeDataRequests =  parsedRecipeData.map(line => {
         const sourceAmount = line[0].amount;
-        // If the line is in ounces, there is no need to fetch as conversion is purely mathematical
+        // To convert oz to grams there is no need to fetch as conversion is purely mathematical
         // Ensure response is in the same format as the parsed response for converted ingredients
-        if (line[0].unitShort === "oz") {
+        if (line[0].unitShort === "oz" && convertTo === "grams") {
           const targetAmount = Math.round(28.3495 * sourceAmount);
           return (nonConvertedOutput(line[0], targetAmount, "grams"));
           // If the user doesn't want to convert tsp/tbsp/eggs, leave them as they are
@@ -169,8 +163,8 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
             }
            
             let amountPlusUnit = `${line.targetAmount} ${line.targetUnit}`;
-            if (line.targetUnit === "cups") {
-              amountPlusUnit = convertCupsToFraction(line.targetAmount);
+            if (fractionUnits.includes(line.targetUnit)) {
+              amountPlusUnit = decimalToFraction(line.targetAmount, line.targetUnit);
             } else if (line.targetUnit === "grams") {
               amountPlusUnit = `${Math.round(line.targetAmount)} ${line.targetUnit}`;
             };

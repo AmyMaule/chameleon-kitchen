@@ -1,4 +1,17 @@
-// use Euclidean algorithm to get highest common factor of numerator and denominator
+// Ensure eggs are correctly converted and things like 'eggplant' are not included in egg conversion
+export const isEgg = (recipeLine: string) => {
+  const eggVariants = ["egg", "eggs", "egg white", "egg whites", "egg yolk", "egg yolks"];
+  return eggVariants.includes(recipeLine?.toLowerCase());
+}
+
+export const isSpoonMeasure = (recipeLine: string) => {
+  const spoonMeasureVariants = ["tsp", "tbsp"];
+  return spoonMeasureVariants.includes(recipeLine?.toLowerCase());
+}
+
+export const fractionUnits = ["cup", "cups", "tsp", "teaspoon", "teaspoons", "tbsp", "tablespoon", "tablespoons"];
+
+  // use Euclidean algorithm to get highest common factor of numerator and denominator
 function highestCommonFactor(numerator: number, denominator: number) {
   while (denominator !== 0) {
     let remainder = numerator % denominator;
@@ -9,7 +22,7 @@ function highestCommonFactor(numerator: number, denominator: number) {
   return numerator;
 }
 
-  export const convertCupsToFraction = (amount: number) => {
+  export const decimalToFraction = (amount: number, unit: string = "cup") => {
   const integer = Math.floor(amount);
   // round remaining decimal to nearest 1/8 or 1/3 as cups are multiples of either 1/8 or 1/3
   const fractionToNearestEighth = Math.round((amount - integer) * 8) / 8;
@@ -20,9 +33,9 @@ function highestCommonFactor(numerator: number, denominator: number) {
     ? fractionToNearestThird
     : fractionToNearestEighth
 
-  // if amount is an integer
+  // if amount is an integer, return without further calculations
   if (closestFraction === 0) {
-    return integer > 1 ? `${integer} cups` : `${integer} cup`;
+    return integer > 1 ? `${integer} ${unit}s` : `${integer} ${unit}`;
   }
 
   let denominator = closestFraction === fractionToNearestEighth ? 8 : 3;
@@ -33,5 +46,5 @@ function highestCommonFactor(numerator: number, denominator: number) {
   denominator /= divisor;
 
   let fraction = integer ? `${integer} ${numerator}/${denominator}` : `${numerator}/${denominator}`; 
-  return integer > 1 ? `${fraction} cups` : `${fraction} cup`;
+  return integer > 1 ? `${fraction} ${unit}s` : `${fraction} ${unit}`;
 }
