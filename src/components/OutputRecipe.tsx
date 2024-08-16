@@ -60,7 +60,15 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
 
     const recipeLinesToFetch = pastedRecipe
       .split("\n")
-      .map((row: string) => row.trim())
+      .map((row: string) => {
+        // If the first character of the line is not a number, slice from the first num
+        if (isNaN(Number(row[0]))) {
+          const rowArr = row.split("");
+          const firstNum = rowArr.findIndex(char => !isNaN(Number(char)) && char !== " ");
+          return row.slice(firstNum).trim();
+        }
+        return row;
+      })
       .filter((row: string) => row)
       // replace any unicode fraction characters with normalized strings
       .map((row: string) => row.normalize("NFKD").replaceAll("▢", ""))
