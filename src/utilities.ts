@@ -22,8 +22,11 @@ function highestCommonFactor(numerator: number, denominator: number) {
   return numerator;
 }
 
-  export const decimalToFraction = (amount: number, unit: string = "cup") => {
+export const decimalToFraction = (amount: number, unit: string = "cup") => {
+  // If 'cups' or 'grams' are passed in, ensure they become singular
+  if (unit.endsWith("s")) unit = unit.slice(0, unit.length - 1);
   const integer = Math.floor(amount);
+  
   // round remaining decimal to nearest 1/8 or 1/3 as cups are multiples of either 1/8 or 1/3
   const fractionToNearestEighth = Math.round((amount - integer) * 8) / 8;
   const fractionToNearestThird = Math.round((amount - integer) * 3) / 3;
@@ -45,6 +48,6 @@ function highestCommonFactor(numerator: number, denominator: number) {
   numerator /= divisor;
   denominator /= divisor;
 
-  let fraction = integer ? `${integer} ${numerator}/${denominator}` : `${numerator}/${denominator}`; 
+  let fraction = integer ? `${integer} ${numerator}/${denominator}` : `${numerator}/${denominator}`;
   return integer > 1 ? `${fraction} ${unit}s` : `${fraction} ${unit}`;
 }
