@@ -15,3 +15,6 @@ dist
 
 # Environment variables
 .env
+
+# Ongoing design
+design

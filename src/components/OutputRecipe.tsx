@@ -44,13 +44,10 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
     return convertedLine;
   }
 
-  const getSourceUnit = (originalRecipeLine: string, line: OutputRecipeFormat): string => {
-    // If the original recipe was typed with no space between the amount and unit (e.g. 1cup) ensure this is replaced correctly
-    const spaceChar = originalRecipeLine.includes(`${line.sourceAmount} ${line.sourceUnit}`) ? " " : "";
-
+  const getSourceUnit = (line: OutputRecipeFormat): string => {
     // Replace the original measurement with the converted gram amounts - some lines don't have sourceUnits (e.g. 2 eggs)
     return line.sourceUnit 
-      ? `${line.sourceAmount}${spaceChar}${line.sourceUnit}` 
+      ? `${line.sourceAmount} ${line.sourceUnit}` 
       : line.sourceAmount.toString();
   }
 
@@ -61,17 +58,21 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
     const recipeLinesToFetch = pastedRecipe
       .split("\n")
       .map((row: string) => {
+        // replace any unicode fraction characters with normalized strings
+        row = row.normalize("NFKD").replaceAll("▢", "").toLowerCase()
         // If the first character of the line is not a number, slice from the first num
         if (isNaN(Number(row[0]))) {
           const rowArr = row.split("");
-          const firstNum = rowArr.findIndex(char => !isNaN(Number(char)) && char !== " ");
+          let firstNum = rowArr.findIndex(char => !isNaN(Number(char)) && char !== " ");
+          // if there are no numbers in the row, get the first letter instead e.g. "pinch nutmeg"
+          if (firstNum === -1) {
+            firstNum = rowArr.findIndex(char => /[a-zA-Z]/.test(char));
+          }
           return row.slice(firstNum).trim();
         }
         return row;
       })
       .filter((row: string) => row)
-      // replace any unicode fraction characters with normalized strings
-      .map((row: string) => row.normalize("NFKD").replaceAll("▢", ""))
       .map((row: string) => {
         const slashPresent: boolean = row.indexOf("\u2044") !== -1 || row.indexOf("/") !== -1;
         
@@ -123,7 +124,7 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
         const sourceAmount = line[0].amount;
         // To convert oz to grams there is no need to fetch as conversion is purely mathematical
         // Ensure response is in the same format as the parsed response for converted ingredients
-        if (line[0].unitShort === "oz" && convertTo === "grams") {
+        if (line[0].unitShort.toLowerCase() === "oz" && convertTo === "grams") {
           const targetAmount = Math.round(28.3495 * sourceAmount);
           return (nonConvertedOutput(line[0], targetAmount, "grams"));
           // If the user doesn't want to convert tsp/tbsp/eggs, leave them as they are
@@ -160,7 +161,7 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
           const recipe: string[] = [];
           outputRecipeData.forEach((line, i) => {
             let originalRecipeLine = parsedRecipeData[i][0].original;
-            const sourceUnit: string = getSourceUnit(originalRecipeLine, line);
+            const sourceUnit: string = getSourceUnit(line).toLowerCase();
 
             // If the original line had a period after the unit (c. for cup or oz. for ounches, etc) remove the period
             const sourceIndex = originalRecipeLine.indexOf(sourceUnit);
@@ -175,9 +176,8 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
               amountPlusUnit = decimalToFraction(line.targetAmount, line.targetUnit);
             } else if (line.targetUnit === "grams") {
               amountPlusUnit = `${Math.round(line.targetAmount)} ${line.targetUnit}`;
-            };
-            let outputRecipeLine = originalRecipeLine.replace(sourceUnit, `${amountPlusUnit}`);
-
+            }
+            const outputRecipeLine = originalRecipeLine.replace(sourceUnit, `${amountPlusUnit}`);
             recipe.push(outputRecipeLine);
             // setOutputRecipe once the entire recipe has been parsed and converted
             if (i === parsedRecipeData.length - 1) setOutputRecipe(recipe);
