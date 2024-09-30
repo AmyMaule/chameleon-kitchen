@@ -1,3 +1,8 @@
+import { 
+  OutputRecipeFormat,
+  ParsedRecipeFormat
+} from "./types";
+
 // Ensure eggs are correctly converted and things like 'eggplant' are not included in egg conversion
 export const isEgg = (ingredient: string) => {
   const eggVariants = ["egg", "eggs", "egg white", "egg whites", "egg yolk", "egg yolks"];
@@ -57,4 +62,22 @@ export const decimalToFraction = (amount: number, unit: string = "cup") => {
   return integer <= 1
     ? `${fraction} ${unit}` 
     : `${fraction} ${unit}s`;
+}
+
+export const getSourceUnit = (line: OutputRecipeFormat, parsedRecipeData: ParsedRecipeFormat): string => {
+  // Replace the original measurement with the converted gram amounts - some lines don't have sourceUnits (e.g. 2 eggs)
+  const sourceUnit = line.sourceUnit 
+    ? `${line.sourceAmount} ${line.sourceUnit}` 
+    : line.sourceAmount.toString()
+    
+  if (parsedRecipeData.original.indexOf(sourceUnit) !== -1) {
+    return sourceUnit;
+  } else {
+    // The API sometimes creates a unit ("serving") if none existed initially, return original recipe line minus ingredient name
+    if (sourceUnit.includes("serving") && !parsedRecipeData.original.includes("serving")) {
+      return parsedRecipeData.original.replace(parsedRecipeData.name, "");
+    }
+    // remove spaces if original recipe had no spaces
+    return sourceUnit.replace(/\s+/g, "");
+  }
 }
