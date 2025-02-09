@@ -13,6 +13,7 @@ import {
   getSourceUnit,
   isEgg,
   isSpoonMeasure,
+  preParseDoubleIngredientRow
 } from "../utilities";
 
 type OutputRecipeProps = {
@@ -30,7 +31,7 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
   const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
   const apiKey: string = import.meta.env.VITE_APIKEY;
   const outputRecipeRef = useRef<HTMLDivElement>(null);
-  
+
   // nonConvertedOutput deals with recipe lines that don't need to be converted from their original units
   const nonConvertedOutput = (recipeLine: RecipeLineType, targetAmount: number, targetUnit: string) => {
     const sourceAmount = recipeLine.amount;
@@ -95,10 +96,17 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
           // Replace the fraction with the decimal version before querying the parse API
           return fractionAsdecimal + row.slice(slashIndex + 2);
         }
+
+        // check if + sign in the row - if so, pre-parse it into 1 combined line or onto 2 lines
+        if (row.includes("+")) {
+          const splitRow = row.split("+").map(ing => ing.split(" ").filter(item => item));
+          return preParseDoubleIngredientRow(splitRow);
+        }
         return row;
       })
 
-    const requests = recipeLinesToFetch.map((recipeLine: string) => {
+    // Flatten recipeLines: if a row had to be split onto 2 lines in pre-parsing, it is returned as string[] instead of a string
+    const requests = recipeLinesToFetch.flat().map((recipeLine: string) => {
       return fetch(`${parseURL}?ingredientList=${recipeLine}&servings=1&includeNutrition=false&apiKey=${apiKey}`, {
         method: "POST",
         headers: {

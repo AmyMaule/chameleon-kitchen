@@ -9,8 +9,11 @@ export const isEgg = (ingredient: string) => {
   return eggVariants.includes(ingredient?.toLowerCase());
 }
 
+export const tspVariants = ["tsp", "teaspoon", "teaspoons"];
+export const tbspVariants = ["tbsp", "tablespoon", "tablespoons"];
+
 export const isSpoonMeasure = (unit: string) => {
-  const spoonMeasureVariants = ["tsp", "tbsp", "teaspoon", "tablespoon"];
+  const spoonMeasureVariants = tspVariants.concat(tbspVariants);
   return spoonMeasureVariants.includes(unit?.toLowerCase());
 }
 
@@ -80,4 +83,50 @@ export const getSourceUnit = (line: OutputRecipeFormat, parsedRecipeData: Parsed
     // remove spaces if original recipe had no spaces
     return sourceUnit.replace(/\s+/g, "");
   }
+}
+
+// pre-parse recipe lines containing a "+" 
+// receives format: [["1", "cup"], ["2", "tbsp", "flour"]]
+export const preParseDoubleIngredientRow = (splitRow: string[][]): string[] => {
+  // Different egg types (e.g. 1 egg + 1 egg yolk) should go onto 2 lines
+  if (splitRow[0].some(word => ["egg", "eggs"].includes(word))) {
+    return [splitRow[0].join(" "), splitRow[1].join(" ")]
+  }
+
+  const spoonMeasureVariants = tspVariants.concat(tbspVariants);
+  let isCup = false, spoonMeasure = "", numCups = 0, numSpoons = 0;
+  let ingredientName = "";
+
+  // Combine lines that contain the same ingredient (e.g. 1 cup + 2 tbsp flour) into cups
+  for (const word of splitRow[0]) {
+    if (["cup", "cups"].includes(word.toLowerCase())) {
+      isCup = true;
+    } else if (!isNaN(Number(word))) {
+      numCups = Number(word);
+    }
+  }
+  for (const word of splitRow[1]) {
+    if (spoonMeasureVariants.includes(word.toLowerCase())) {
+      spoonMeasure = word;
+    } else if (!isNaN(Number(word))) {
+      numSpoons = Number(word);
+    } else {
+      ingredientName += word;
+    }
+  }
+
+  if (isCup && spoonMeasure && numCups && numSpoons) {
+    if (tspVariants.includes(spoonMeasure.toLowerCase())) {
+      numCups += numSpoons / 48; // tsp is 1/48 of a cup
+    } else if (tbspVariants.includes(spoonMeasure.toLowerCase())) {
+      numCups += numSpoons / 16; // tbsp is 1/16 of a cup
+    }
+    // The parse/conversion APIs store up to 7 decimal places
+    // Convert to string->number->string in order to remove trailing zeroes which mess with the replacement in output data
+    return [`${Number(numCups.toFixed(6).toString())} cups ${ingredientName}`];
+  }
+
+  // If neither of the above situations apply, return original string
+  console.log(`Couldn't pre-parse ${splitRow[0].join(" ")} + ${splitRow[1].join(" ")}`);
+  return [`${splitRow[0].join(" ")} + ${splitRow[1].join(" ")}`];
 }
