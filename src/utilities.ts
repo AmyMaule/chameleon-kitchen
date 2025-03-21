@@ -87,7 +87,7 @@ export const getSourceUnit = (line: OutputRecipeFormat, parsedRecipeData: Parsed
 
 // pre-parse recipe lines containing a "+" 
 // receives format: [["1", "cup"], ["2", "tbsp", "flour"]]
-export const preParseDoubleIngredientRow = (splitRow: string[][]): string[] => {
+export const preParseDoubleIngredientRow = (splitRow: string[][]): string[] => {  
   // Different egg types (e.g. 1 egg + 1 egg yolk) should go onto 2 lines
   if (splitRow[0].some(word => ["egg", "eggs"].includes(word))) {
     return [splitRow[0].join(" "), splitRow[1].join(" ")]
@@ -95,7 +95,7 @@ export const preParseDoubleIngredientRow = (splitRow: string[][]): string[] => {
 
   const spoonMeasureVariants = tspVariants.concat(tbspVariants);
   let isCup = false, spoonMeasure = "", numCups = 0, numSpoons = 0;
-  let ingredientName = "";
+  const ingredientName = [];
 
   // Combine lines that contain the same ingredient (e.g. 1 cup + 2 tbsp flour) into cups
   for (const word of splitRow[0]) {
@@ -111,7 +111,7 @@ export const preParseDoubleIngredientRow = (splitRow: string[][]): string[] => {
     } else if (!isNaN(Number(word))) {
       numSpoons = Number(word);
     } else {
-      ingredientName += word;
+      ingredientName.push(word);
     }
   }
 
@@ -123,7 +123,7 @@ export const preParseDoubleIngredientRow = (splitRow: string[][]): string[] => {
     }
     // The parse/conversion APIs store up to 7 decimal places
     // Convert to string->number->string in order to remove trailing zeroes which mess with the replacement in output data
-    return [`${Number(numCups.toFixed(6).toString())} cups ${ingredientName}`];
+    return [`${Number(numCups.toFixed(6).toString())} cups ${ingredientName.join(" ")}`];
   }
 
   // If neither of the above situations apply, return original string

@@ -94,7 +94,7 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
             }
           }
           // Replace the fraction with the decimal version before querying the parse API
-          return fractionAsdecimal + row.slice(slashIndex + 2);
+          row = fractionAsdecimal + row.slice(slashIndex + 2);
         }
 
         // check if + sign in the row - if so, pre-parse it into 1 combined line or onto 2 lines
