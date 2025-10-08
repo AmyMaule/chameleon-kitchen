@@ -53,8 +53,14 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
     const recipeLinesToFetch = pastedRecipe
       .split("\n")
       .map((row: string) => {
-        // replace any unicode fraction characters with normalized strings
-        row = row.normalize("NFKD").replaceAll("▢", "").toLowerCase()
+        // replace any unicode fraction characters with normalized strings, replace t/T because the API doesn't recognize them
+        row = row
+          .normalize("NFKD")
+          .replaceAll("▢", "")
+          .replace(" t ", " tsp ")
+          .replace(" T ", " tbsp ")
+          .toLowerCase();
+
         // If the first character of the line is not a number, slice from the first num
         if (isNaN(Number(row[0]))) {
           const rowArr = row.split("");
@@ -85,16 +91,16 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
           }
           
           // Use Math.round() to give up to 3 decimal places
-          let fractionAsdecimal: number = Math.round((parseInt(row[slashIndex - 1]) / Number(denominator)) * 1000) / 1000;
+          let fractionAsDecimal: number = Math.round((parseInt(row[slashIndex - 1]) / Number(denominator)) * 1000) / 1000;
           // If there is a number before the fraction, e.g. 1 3/4 cups
           if (slashIndex !== 1) {
             const intBeforeFraction: number = parseInt(row.slice(0, slashIndex - 1));
             if (!isNaN(intBeforeFraction)) {
-              fractionAsdecimal += intBeforeFraction;
+              fractionAsDecimal += intBeforeFraction;
             }
           }
           // Replace the fraction with the decimal version before querying the parse API
-          row = fractionAsdecimal + row.slice(slashIndex + 2);
+          row = fractionAsDecimal + row.slice(slashIndex + 2);
         }
 
         // check if + sign in the row - if so, pre-parse it into 1 combined line or onto 2 lines
@@ -216,7 +222,7 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
     })
     .catch(errors => {
       errors.forEach((err: unknown) => console.log(err));
-      setErrorMsg("The API limit has been reached. Please try again tomorrow.")
+      setErrorMsg("Unknown error. There may be an issue with one of the ingredients.")
     })
   }, [converting]);
 
