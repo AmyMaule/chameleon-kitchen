@@ -25,3 +25,10 @@ export type ParsedRecipeFormat = {
 }
 
 export type ConvertToType = "cups" | "grams";
+
+export type TabsType = "unit" | "tin" ;
+
+export type TabItem = {
+  id: string,
+  label: string
+}

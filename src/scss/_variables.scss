@@ -11,3 +11,11 @@ $color-secondary: #1483de;
 $color-secondary-highlight: #53b2ff;
 
 $color-text: rgb(4, 42, 4);
+
+$tab-gradient: linear-gradient(
+  0deg,
+  rgba($color-primary, 0.6) 25%,
+  rgba($color-primary-highlight, 0.6) 40%,
+  rgba($color-secondary-highlight, 0.6) 80%,
+  rgba($color-secondary, 0.6) 100%
+);
