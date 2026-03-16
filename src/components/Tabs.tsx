@@ -1,6 +1,6 @@
 import { useState } from "react";
-import TinConversion from "./TinConversion";
-import UnitConversion from "./UnitConversion";
+import TinConversion from "./tin-conversion/TinConversion";
+import UnitConversion from "./unit-conversion/UnitConversion";
 import { TabBar } from "./TabBar";
 import { TabItem } from "../types";
 

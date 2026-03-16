@@ -1,4 +1,4 @@
-import { SelectedOptionsType } from '../types';
+import { SelectedOptionsType } from '../../types';
 
 type ConversionOptionsProps = {
   setSelectedOptions: React.Dispatch<React.SetStateAction<SelectedOptionsType>>

@@ -3,10 +3,11 @@ import { useRef } from 'react';
 import { 
   ConvertToType,
   SelectedOptionsType
-} from '../types';
+} from '../../types';
 
 import ConversionOptions from './ConversionOptions';
 import ConversionUnit from './ConversionUnit';
+import RecipeTextarea from '../RecipeTextArea';
 
 type InputRecipeProps = {
   convertTo: ConvertToType
@@ -28,8 +29,7 @@ const InputRecipe = ({ convertTo, setPastedRecipe, setConverting, setConvertTo, 
 
   return (
     <>
-      <h3 className="recipe-title">Paste or type your recipe below:</h3>
-      <textarea className="recipe-container input-recipe-container" ref={textareaRef} />
+      <RecipeTextarea textareaRef={textareaRef} />
       <ConversionOptions setSelectedOptions={setSelectedOptions} />
       <div className="conversion-units-container">
         <div className="conversion-units-text">Converting into</div>
