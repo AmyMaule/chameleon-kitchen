@@ -17,6 +17,7 @@ const UnitConversion = () => {
   return (
     <>
       <InputRecipe
+        converting={converting}
         convertTo={convertTo}
         setPastedRecipe={setPastedRecipe} 
         setSelectedOptions={setSelectedOptions}

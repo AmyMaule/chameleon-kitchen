@@ -10,18 +10,26 @@ import ConversionUnit from './ConversionUnit';
 import RecipeTextarea from '../RecipeTextArea';
 
 type InputRecipeProps = {
-  convertTo: ConvertToType
+  converting: boolean,
+  convertTo: ConvertToType,
   setPastedRecipe: React.Dispatch<React.SetStateAction<string>>,
   setConverting: React.Dispatch<React.SetStateAction<boolean>>,
   setConvertTo: React.Dispatch<React.SetStateAction<ConvertToType>>,
   setSelectedOptions: React.Dispatch<React.SetStateAction<SelectedOptionsType>>
 }
 
-const InputRecipe = ({ convertTo, setPastedRecipe, setConverting, setConvertTo, setSelectedOptions }: InputRecipeProps) => {
+const InputRecipe = ({ 
+  converting, 
+  convertTo, 
+  setPastedRecipe, 
+  setConverting, 
+  setConvertTo, 
+  setSelectedOptions 
+}: InputRecipeProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSetRecipe: () => void = () => {
-    if (textareaRef.current) {
+    if (textareaRef.current && textareaRef.current.value) {
       setPastedRecipe(textareaRef.current.value);
       setConverting(true);
     }
@@ -38,7 +46,7 @@ const InputRecipe = ({ convertTo, setPastedRecipe, setConverting, setConvertTo, 
           setConvertTo={setConvertTo}
         />
       </div>
-      <button className="btn-convert" onClick={handleSetRecipe}>
+      <button className="btn-convert" onClick={handleSetRecipe} disabled={converting}>
         <span>Convert!</span>
       </button>
     </>
