@@ -1,7 +1,7 @@
 import { useState } from "react";
 import InputRecipe from "./InputRecipe";
 import OutputRecipe from "./OutputRecipe";
-import { ConvertToType, SelectedOptionsType } from "../types";
+import { ConvertToType, SelectedOptionsType } from "../../types";
 
 
 const UnitConversion = () => {

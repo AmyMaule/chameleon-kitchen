@@ -1,4 +1,4 @@
-import { ConvertToType } from "../types";
+import { ConvertToType } from "../../types";
 
 type ConversionUnitProps = {
   convertTo: ConvertToType,

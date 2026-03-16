@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 
+import OutputRecipeContainer from "../OutputRecipeContainer";
+
 import {
   ConvertToType,
   OutputRecipeFormat,
   RecipeLineType, 
   SelectedOptionsType,
-} from "../types";
+} from "../../types";
 
 import { 
   decimalToFraction,
@@ -14,7 +16,7 @@ import {
   isEgg,
   isSpoonMeasure,
   preParseDoubleIngredientRow
-} from "../utilities";
+} from "../../utilities";
 
 type OutputRecipeProps = {
   converting: boolean,
@@ -201,11 +203,6 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
             // setOutputRecipe once the entire recipe has been parsed and converted
             if (i === parsedRecipeData.length - 1) setOutputRecipe(recipe);
           });
-
-          // scroll to output container once conversion is complete
-          if (outputRecipeRef.current) {
-            window.scrollTo({ top: outputRecipeRef.current.offsetTop, behavior: "smooth" });
-          }
         })
       .catch(err => {
         console.log(err);
@@ -226,22 +223,23 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
     })
   }, [converting]);
 
+  // scroll to output container once conversion is complete
+  useEffect(() => {
+    if (!outputRecipe.length) return;
+
+    if (outputRecipeRef.current) {
+      outputRecipeRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  }, [outputRecipe]);
+
   return (
-    <div className="output-recipe-section-container" ref={outputRecipeRef}>
-      <h3 className="recipe-title">Your converted recipe:</h3>
-      <div className="recipe-container output-recipe-container">
-        {outputRecipe.length 
-          ? <div className="output-recipe">
-              {outputRecipe.map((line, i) => {
-                return <div key={line + i}>{line}</div>
-              })}
-            </div>
-          : <div>
-              Paste or type a recipe into the box above to get started!
-            </div>
-        }
-      </div>
-    </div>
+    <OutputRecipeContainer
+      outputRecipe={outputRecipe}
+      outputRecipeRef={outputRecipeRef}
+    />
   )
 }
 
