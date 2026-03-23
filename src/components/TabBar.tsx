@@ -18,7 +18,7 @@ export const TabBar = ({ tabs, activeTabId, onChange }: TabBarProps) => {
 
     setHighlightPos({
       left: el.offsetLeft,
-      width: el.offsetWidth,
+      width: el.offsetWidth
     });
   }, [activeTabId, tabs]);
 
@@ -28,7 +28,7 @@ export const TabBar = ({ tabs, activeTabId, onChange }: TabBarProps) => {
         className="tab-background"
         style={{
           left: highlightPos.left,
-          width: highlightPos.width,
+          width: highlightPos.width
         }}
       />
       {tabs.map((tab, index) => (

@@ -1,7 +1,7 @@
 type OutputRecipeContainerProps = {
-  outputRecipe: string[]
-  outputRecipeRef: React.Ref<HTMLDivElement>
-}
+  outputRecipe: string[];
+  outputRecipeRef: React.Ref<HTMLDivElement>;
+};
 
 const OutputRecipeContainer = ({ outputRecipe, outputRecipeRef }: OutputRecipeContainerProps) => {
   return (
@@ -16,9 +16,7 @@ const OutputRecipeContainer = ({ outputRecipe, outputRecipeRef }: OutputRecipeCo
             ))}
           </div>
         ) : (
-          <div>
-            Paste or type a recipe into the box above to get started!
-          </div>
+          <div>Paste or type a recipe into the box above to get started!</div>
         )}
       </div>
     </div>

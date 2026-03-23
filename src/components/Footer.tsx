@@ -5,7 +5,7 @@ const Footer = () => {
     <footer className="footer-container">
       <div className="footer-copyright">© {currentYear.getFullYear()} Amy Maule</div>
     </footer>
-  )
-}
+  );
+};
 
 export default Footer;
