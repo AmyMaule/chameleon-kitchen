@@ -11,7 +11,7 @@ const App = () => {
       <Tabs />
       <Footer />
     </div>
-  )
-}
+  );
+};
 
 export default App;

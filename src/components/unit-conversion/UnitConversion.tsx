@@ -3,7 +3,6 @@ import InputRecipe from "./InputRecipe";
 import OutputRecipe from "./OutputRecipe";
 import { ConvertToType, SelectedOptionsType } from "../../types";
 
-
 const UnitConversion = () => {
   const [converting, setConverting] = useState(false);
   const [convertTo, setConvertTo] = useState<ConvertToType>("grams");
@@ -19,31 +18,31 @@ const UnitConversion = () => {
       <InputRecipe
         converting={converting}
         convertTo={convertTo}
-        setPastedRecipe={setPastedRecipe} 
+        setPastedRecipe={setPastedRecipe}
         setSelectedOptions={setSelectedOptions}
         setConverting={setConverting}
         setConvertTo={setConvertTo}
       />
 
-      {errorMsg && 
+      {errorMsg && (
         <div className="recipe-error-container">
           <h6 className="recipe-error-text">
             Oops! An error has occurred:{"\n"}
             {errorMsg}
           </h6>
         </div>
-      }
-      
-      <OutputRecipe 
+      )}
+
+      <OutputRecipe
         converting={converting}
         convertTo={convertTo}
-        pastedRecipe={pastedRecipe} 
+        pastedRecipe={pastedRecipe}
         selectedOptions={selectedOptions}
         setConverting={setConverting}
         setErrorMsg={setErrorMsg}
       />
     </>
-  )
-}
+  );
+};
 
 export default UnitConversion;

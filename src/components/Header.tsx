@@ -7,7 +7,7 @@ const Header = () => {
       </div>
       <div className="header-positioning" />
     </>
-  )
-}
+  );
+};
 
 export default Header;

@@ -6,9 +6,9 @@ const Intro = () => {
           Your kitchen companion for <span className="intro-title-underline">seamless recipe conversions!</span>
         </h3>
         <p className="intro-text">
-          Say goodbye to kitchen measurement confusion as Chameleon Kitchen effortlessly converts recipes from cups to grams and everything in between.
-          No need for manual line-by-line conversion calculations - let Chameleon Kitchen do the work for you.
-          Simply paste any recipe into the box to convert it into your preferred units.
+          Say goodbye to kitchen measurement confusion as Chameleon Kitchen effortlessly converts recipes from cups to
+          grams and everything in between. No need for manual line-by-line conversion calculations - let Chameleon
+          Kitchen do the work for you. Simply paste any recipe into the box to convert it into your preferred units.
         </p>
       </div>
       <div className="intro-hr" />
@@ -22,7 +22,7 @@ const Intro = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Intro;

@@ -3,21 +3,25 @@ import { useEffect, useRef } from "react";
 import { useRecipeConversion } from "../../hooks/useRecipeConversion";
 import OutputRecipeContainer from "../OutputRecipeContainer";
 
-import {
-  ConvertToType,
-  SelectedOptionsType,
-} from "../../types";
+import { ConvertToType, SelectedOptionsType } from "../../types";
 
 type OutputRecipeProps = {
-  converting: boolean,
-  convertTo: ConvertToType,
-  pastedRecipe: string,
-  selectedOptions: SelectedOptionsType,
-  setConverting: React.Dispatch<React.SetStateAction<boolean>>,
-  setErrorMsg: React.Dispatch<React.SetStateAction<string>>
-}
+  converting: boolean;
+  convertTo: ConvertToType;
+  pastedRecipe: string;
+  selectedOptions: SelectedOptionsType;
+  setConverting: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
+};
 
-const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, setErrorMsg, setConverting }: OutputRecipeProps) => {
+const OutputRecipe = ({
+  converting,
+  convertTo,
+  pastedRecipe,
+  selectedOptions,
+  setErrorMsg,
+  setConverting
+}: OutputRecipeProps) => {
   const outputRecipeRef = useRef<HTMLDivElement>(null);
   const { outputRecipe } = useRecipeConversion({
     converting,
@@ -40,12 +44,7 @@ const OutputRecipe = ({ converting, convertTo, pastedRecipe, selectedOptions, se
     }
   }, [outputRecipe]);
 
-  return (
-    <OutputRecipeContainer
-      outputRecipe={outputRecipe}
-      outputRecipeRef={outputRecipeRef}
-    />
-  )
-}
+  return <OutputRecipeContainer outputRecipe={outputRecipe} outputRecipeRef={outputRecipeRef} />;
+};
 
 export default OutputRecipe;
