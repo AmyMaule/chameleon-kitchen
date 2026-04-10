@@ -1,14 +1,15 @@
 import React from "react";
 
 type RecipeTextareaProps = {
-  textareaRef: React.Ref<HTMLTextAreaElement>;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 };
 
-const RecipeTextarea = ({ textareaRef }: RecipeTextareaProps) => {
+const RecipeTextarea = ({ value, onChange }: RecipeTextareaProps) => {
   return (
     <>
       <h3 className="recipe-title">Paste or type your recipe below:</h3>
-      <textarea className="recipe-container input-recipe-container" ref={textareaRef} />
+      <textarea className="recipe-container input-recipe-container" value={value} onChange={onChange} />
     </>
   );
 };
