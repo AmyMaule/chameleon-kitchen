@@ -1,15 +1,8 @@
 import { useState, useEffect } from "react";
-
 import { ConvertToType, OutputRecipeFormat, RecipeLineType, SelectedOptionsType } from "../types";
-
-import {
-  decimalToFraction,
-  fractionUnits,
-  getSourceUnit,
-  isEgg,
-  isSpoonMeasure,
-  preParseDoubleIngredientRow
-} from "../utilities";
+import { decimalToFraction, fractionUnits, getSourceUnit } from "../utils/formatting";
+import { isEgg, isSpoonMeasure } from "../utils/ingredientRules";
+import { parseRecipeText } from "../utils/parsing";
 
 const parseURL = "https://api.spoonacular.com/recipes/parseIngredients";
 const convertURL = "https://api.spoonacular.com/recipes/convert";
@@ -54,65 +47,8 @@ export const useRecipeConversion = ({
     // Erase any previous errors caused by failed requests
     setErrorMsg("");
 
-    const recipeLinesToFetch = pastedRecipe
-      .split("\n")
-      .map((row: string) => {
-        // replace any unicode fraction characters with normalized strings, replace t/T because the API doesn't recognize them
-        row = row.normalize("NFKD").replaceAll("▢", "").replace(" t ", " tsp ").replace(" T ", " tbsp ").toLowerCase();
-
-        // If the first character of the line is not a number, slice from the first num
-        if (isNaN(Number(row[0]))) {
-          const rowArr = row.split("");
-          let firstNum = rowArr.findIndex(char => !isNaN(Number(char)) && char !== " ");
-          // if there are no numbers in the row, get the first letter instead e.g. "pinch nutmeg"
-          if (firstNum === -1) {
-            firstNum = rowArr.findIndex(char => /[a-zA-Z]/.test(char));
-          }
-          return row.slice(firstNum).trim();
-        }
-        return row;
-      })
-      .filter((row: string) => row)
-      .map((row: string) => {
-        // Eggs are not correctly parsed if a space is not included before the unit "egg"
-        if (row.includes("egg") && !row.includes(" egg")) {
-          row = row.replace(/(\d+)(eggs?)/gi, "$1 $2");
-        }
-
-        const slashPresent: boolean = row.indexOf("\u2044") !== -1 || row.indexOf("/") !== -1;
-
-        // Highly unlikely there will ever be two digits as the numerator in a recipe - deal with this edge case if it ever crops up
-        if (slashPresent) {
-          const slashIndex: number = row.indexOf("\u2044") !== -1 ? row.indexOf("\u2044") : row.indexOf("/");
-          let denominator: string = row[slashIndex + 1];
-          if (!isNaN(parseInt(row[slashIndex + 2]))) {
-            denominator += row[slashIndex + 2];
-          }
-
-          // Use Math.round() to give up to 3 decimal places
-          let fractionAsDecimal: number =
-            Math.round((parseInt(row[slashIndex - 1]) / Number(denominator)) * 1000) / 1000;
-          // If there is a number before the fraction, e.g. 1 3/4 cups
-          if (slashIndex !== 1) {
-            const intBeforeFraction: number = parseInt(row.slice(0, slashIndex - 1));
-            if (!isNaN(intBeforeFraction)) {
-              fractionAsDecimal += intBeforeFraction;
-            }
-          }
-          // Replace the fraction with the decimal version before querying the parse API
-          row = fractionAsDecimal + row.slice(slashIndex + 2);
-        }
-
-        // check if + sign in the row - if so, pre-parse it into 1 combined line or onto 2 lines
-        if (row.includes("+")) {
-          const splitRow = row.split("+").map(ing => ing.split(" ").filter(item => item));
-          return preParseDoubleIngredientRow(splitRow);
-        }
-        return row;
-      });
-
-    // Flatten recipeLines: if a row had to be split onto 2 lines in pre-parsing, it is returned as string[] instead of a string
-    const requests = recipeLinesToFetch.flat().map((recipeLine: string) => {
+    const recipeLinesToFetch = parseRecipeText(pastedRecipe);
+    const requests = recipeLinesToFetch.map((recipeLine: string) => {
       return fetch(`${parseURL}?ingredientList=${recipeLine}&servings=1&includeNutrition=false&apiKey=${apiKey}`, {
         method: "POST",
         headers: {
@@ -124,7 +60,6 @@ export const useRecipeConversion = ({
     Promise.all(requests)
       .then(responses => {
         const errors = responses.filter(response => !response?.ok);
-
         if (errors.length) {
           throw errors.map(response => Error(response.statusText));
         }
