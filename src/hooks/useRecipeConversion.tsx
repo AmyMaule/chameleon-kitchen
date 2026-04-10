@@ -132,6 +132,9 @@ export const useRecipeConversion = ({
       })
       .then(parsedRecipeData => {
         const recipeDataRequests = parsedRecipeData.map(line => {
+          if (!line[0].unitLong && !line[0].unitShort) {
+            throw new Error("Each line must contain an ingredient and a unit");
+          }
           const sourceAmount = line[0].amount;
           // To convert oz to grams there is no need to fetch as conversion is purely mathematical
           // Ensure response is in the same format as the parsed response for converted ingredients
@@ -208,13 +211,13 @@ export const useRecipeConversion = ({
           if (err.message.startsWith("Your daily points limit")) {
             setErrorMsg("The API limit has been reached. Please try again tomorrow.");
           } else {
-            setErrorMsg(err.message);
+            setErrorMsg(`Error: ${err.message}`);
           }
         }
       })
       .catch(errors => {
         errors.forEach((err: unknown) => console.log(err));
-        setErrorMsg("Unknown error. There may be an issue with one of the ingredients.");
+        setErrorMsg("An unknown error has occurred\n. There may be an issue with one of the ingredients.");
       });
   }, [converting, pastedRecipe, convertTo, selectedOptions.eggs, selectedOptions.tsp, setConverting, setErrorMsg]);
 

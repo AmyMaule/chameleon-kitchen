@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import { TabItem } from "../types";
 
 interface TabBarProps {
@@ -11,7 +11,7 @@ export const TabBar = ({ tabs, activeTabId, onChange }: TabBarProps) => {
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const [highlightPos, setHighlightPos] = useState({ left: 0, width: 0 });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const index = tabs.findIndex(tab => tab.id === activeTabId);
     const el = tabsRef.current[index];
     if (!el) return;
