@@ -13,7 +13,7 @@ function highestCommonFactor(numerator: number, denominator: number) {
   return numerator;
 }
 
-export const decimalToFraction = (amount: number, unit: string = "cup") => {
+const decimalToFraction = (amount: number, unit: string = "cup") => {
   // If 'cups' or 'grams' are passed in, ensure they become singular
   if (unit.endsWith("s")) unit = unit.slice(0, unit.length - 1);
   const integer = Math.floor(amount);
@@ -61,4 +61,39 @@ export const getSourceUnit = (line: OutputRecipeFormat, parsedRecipeData: Parsed
     // remove spaces if original recipe had no spaces
     return sourceUnit.replace(/\s+/g, "");
   }
+};
+
+const buildOutputLine = (line: OutputRecipeFormat, parsedLine: ParsedRecipeFormat): string => {
+  let originalRecipeLine = parsedLine.original;
+  const sourceUnit = getSourceUnit(line, parsedLine).toLowerCase();
+  const sourceIndex = originalRecipeLine.indexOf(sourceUnit);
+
+  // If sourceUnit isn’t found, return as is
+  if (sourceIndex === -1) return originalRecipeLine;
+
+  // If the original line had a period after the unit (c. for cup or oz. for ounces, etc) remove the period
+  if (originalRecipeLine[sourceIndex + sourceUnit.length] === ".") {
+    const chars = originalRecipeLine.split("");
+    chars.splice(sourceIndex + sourceUnit.length, 1);
+    originalRecipeLine = chars.join("");
+  }
+
+  let amountPlusUnit = line.targetAmount ? `${line.targetAmount} ${line.targetUnit}` : "";
+  if (fractionUnits.includes(line.targetUnit)) {
+    amountPlusUnit = decimalToFraction(line.targetAmount, line.targetUnit);
+  } else if (line.targetUnit === "grams") {
+    amountPlusUnit = `${Math.round(line.targetAmount)} ${line.targetUnit}`;
+  }
+
+  // If input was 3eggs, add a space so output is 44 grams eggs not 44 gramseggs
+  const additionalSpace = originalRecipeLine[sourceIndex + sourceUnit.length] !== " " ? " " : "";
+
+  return originalRecipeLine.replace(sourceUnit, amountPlusUnit + additionalSpace);
+};
+
+export const buildOutputRecipe = (
+  outputRecipeData: OutputRecipeFormat[],
+  parsedRecipeData: ParsedRecipeFormat[][]
+): string[] => {
+  return outputRecipeData.map((line, i) => buildOutputLine(line, parsedRecipeData[i][0]));
 };
