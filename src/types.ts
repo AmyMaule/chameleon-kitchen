@@ -21,6 +21,7 @@ export type ParsedRecipeFormat = {
   original: string;
   name: string;
   amount: number;
+  unitShort: string;
   unit: string;
 };
 
