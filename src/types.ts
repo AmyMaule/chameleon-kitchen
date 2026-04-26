@@ -33,3 +33,8 @@ export type TabItem = {
   id: string;
   label: string;
 };
+
+export type TinSizeOption = {
+  label: string;
+  value: string;
+};
