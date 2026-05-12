@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { TabItem } from "../types";
 
 interface TabBarProps {
@@ -8,10 +8,19 @@ interface TabBarProps {
 }
 
 export const TabBar = ({ tabs, activeTabId, onChange }: TabBarProps) => {
+  const [fontsReady, setFontsReady] = useState(false);
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const [highlightPos, setHighlightPos] = useState({ left: 0, width: 0 });
 
+  useEffect(() => {
+    document.fonts.ready.then(() => {
+      setFontsReady(true);
+    });
+  }, []);
+
   useLayoutEffect(() => {
+    // Hold off on measuring the width of the highlight until the font has fully loaded
+    if (!fontsReady) return;
     const index = tabs.findIndex(tab => tab.id === activeTabId);
     const el = tabsRef.current[index];
     if (!el) return;
@@ -20,7 +29,7 @@ export const TabBar = ({ tabs, activeTabId, onChange }: TabBarProps) => {
       left: el.offsetLeft,
       width: el.offsetWidth
     });
-  }, [activeTabId, tabs]);
+  }, [activeTabId, fontsReady, tabs]);
 
   return (
     <div className="tabs-btn-container" style={{ position: "relative" }}>

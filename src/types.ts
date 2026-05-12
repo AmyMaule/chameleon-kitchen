@@ -38,3 +38,14 @@ export type TinSizeOption = {
   label: string;
   value: string;
 };
+
+export type TinShapeOption = {
+  label: string;
+  value: string;
+  image: string;
+};
+
+export type TinConfig = {
+  shape: TinShapeOption;
+  size: TinSizeOption | null;
+};

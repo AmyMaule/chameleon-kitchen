@@ -4,21 +4,29 @@ import RecipeTextarea from "../RecipeTextArea";
 import OutputRecipeContainer from "../OutputRecipeContainer";
 import RecipeConvertBtn from "../RecipeConvertBtn";
 import ErrorMsg from "../ErrorMsg";
-import TinSizeSelection from "./TinSizeSelection";
-import { TinSizeOption } from "../../types";
+import TinSelection from "./TinSelection";
+import { TinConfig } from "../../types";
+import { tinShapeOptions, tinSizeOptions } from "../../utils/constants";
 
 const TinConversion = () => {
   const [converting, setConverting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [outputRecipe, setOutputRecipe] = useState<string[]>([""]);
   const [pastedRecipe, setPastedRecipe] = useState("");
-  const [fromTinSize, setFromTinSize] = useState<TinSizeOption | null>(null);
-  const [toTinSize, setToTinSize] = useState<TinSizeOption | null>(null);
+  const [fromTin, setFromTin] = useState<TinConfig>({
+    shape: tinShapeOptions[0],
+    size: tinSizeOptions[0]
+  });
+  const [toTin, setToTin] = useState<TinConfig>({
+    shape: tinShapeOptions[0],
+    size: tinSizeOptions[0]
+  });
   const outputRecipeRef = useRef<HTMLDivElement>(null);
 
-  const handleSetRecipe: () => void = () => {
+  const handleSetRecipe = () => {
     if (pastedRecipe) {
-      console.log("From tin", fromTinSize?.label, "to tin:", toTinSize?.label);
+      console.log("From", fromTin.shape.label, "to", toTin.shape.label);
+      console.log("From", fromTin.size?.label, "to", toTin.size?.label);
       setConverting(true);
     } else {
       setErrorMsg("Enter a recipe to get started!");
@@ -40,12 +48,22 @@ const TinConversion = () => {
 
   return (
     <>
-      <TinSizeSelection
-        fromTinSize={fromTinSize}
-        toTinSize={toTinSize}
-        setFromTinSize={setFromTinSize}
-        setToTinSize={setToTinSize}
-      />
+      <div className="tin-size-conversion-container">
+        <h4 className="tin-size-title">Convert a recipe...</h4>
+        <div className="tin-size-selection-container">
+          <TinSelection
+            label="From this tin..."
+            tin={fromTin}
+            onChange={patch => setFromTin(prev => ({ ...prev, ...patch }))}
+          />
+          <TinSelection
+            label="...to this tin"
+            tin={toTin}
+            onChange={patch => setToTin(prev => ({ ...prev, ...patch }))}
+          />
+        </div>
+      </div>
+
       <RecipeTextarea value={pastedRecipe} onChange={e => setPastedRecipe(e.target.value)} />
       <RecipeConvertBtn converting={converting} handleSetRecipe={handleSetRecipe} />
       {errorMsg && <ErrorMsg message={errorMsg} />}

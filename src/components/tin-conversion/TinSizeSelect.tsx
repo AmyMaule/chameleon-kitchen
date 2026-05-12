@@ -3,7 +3,7 @@ import type { StylesConfig, CSSObjectWithLabel, SingleValue } from "react-select
 import { TinSizeOption } from "../../types";
 import { tinSizeOptions } from "../../utils/constants";
 
-type TinSelectProps = {
+type TinSizeSelectProps = {
   value: TinSizeOption | null;
   onChange: (option: SingleValue<TinSizeOption>) => void;
 };
@@ -32,8 +32,8 @@ const selectStyles: StylesConfig<TinSizeOption, false> = {
   })
 };
 
-const TinSelect = ({ value, onChange }: TinSelectProps) => {
+const TinSizeSelect = ({ value, onChange }: TinSizeSelectProps) => {
   return <Select options={tinSizeOptions} styles={selectStyles} value={value} onChange={onChange} />;
 };
 
-export default TinSelect;
+export default TinSizeSelect;
