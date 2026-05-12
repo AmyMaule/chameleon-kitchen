@@ -1,4 +1,4 @@
-import { TinSizeOption } from "../types";
+import { TinSizeOption, TinShapeOption } from "../types";
 
 export const tinSizeOptions: TinSizeOption[] = [
   { label: '6" (15.2cm)', value: "6" },
@@ -8,4 +8,10 @@ export const tinSizeOptions: TinSizeOption[] = [
   { label: '10" (25.4cm)', value: "10" },
   { label: '11" (27.9cm)', value: "11" },
   { label: '12" (30.5cm)', value: "12" }
+];
+
+export const tinShapeOptions: TinShapeOption[] = [
+  { label: "Circle", value: "circle", image: "/circle-tin.png" },
+  { label: "Square", value: "square", image: "/square-tin.png" },
+  { label: "Rectangle", value: "rectangle", image: "/rectangle-tin.png" }
 ];
