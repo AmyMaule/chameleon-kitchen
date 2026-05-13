@@ -21,9 +21,14 @@ const selectStyles: StylesConfig<TinSizeOption, false> = {
     fontSize: "24px"
   }),
 
-  option: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+  option: (base: CSSObjectWithLabel, state): CSSObjectWithLabel => ({
     ...base,
-    fontSize: "24px"
+    fontSize: "24px",
+    backgroundColor: state.isSelected
+      ? "var(--react-select-selected)"
+      : state.isFocused
+        ? "var(--react-select-accent)"
+        : base.backgroundColor
   }),
 
   placeholder: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({

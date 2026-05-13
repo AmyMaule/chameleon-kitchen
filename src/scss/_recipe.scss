@@ -26,13 +26,14 @@
   outline: none;
   border: 2px solid $color-primary;
   outline: 2px solid rgb(27, 231, 139);
-  background-color: rgba(246, 252, 246, 0.93);
+  background-color: rgba(246, 252, 246, 0.9);
   padding: 0.75rem;
+  transition: all ease 0.3s;
 
   &:focus {
     border: 2px solid rgb(24, 226, 135);
     outline: 2px solid $color-primary-highlight;
-    background-color: rgba(248, 252, 248, 0.98);
+    background-color: rgb(248, 252, 248);
     box-shadow: 0 0.5rem 1rem rgba(136, 195, 117, 0.2);
   }
 }
@@ -107,7 +108,7 @@
 .output-recipe-container {
   border: 2px solid $color-secondary;
   outline: 2px solid $color-secondary-highlight;
-  background-color: rgba(246, 247, 252, 0.93);
+  background-color: rgb(246, 247, 252);
 }
 
 // Error

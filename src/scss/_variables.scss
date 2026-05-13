@@ -4,12 +4,14 @@
 }
 
 // Colors
-$color-primary: #8acf96;
-$color-primary-highlight: #58ff82;
-$color-primary-focus: #50a95f;
+$color-primary: rgb(110, 218, 121);
+$color-primary-highlight: rgb(88, 255, 130);
+$color-primary-focus: rgb(80, 169, 95);
 
-$color-secondary: #1483de;
-$color-secondary-highlight: #53b2ff;
+$color-secondary: rgb(20, 131, 222);
+$color-secondary-highlight: rgb(83, 178, 255);
+
+$color-tertiary: rgb(68, 201, 174);
 
 $color-text: rgb(4, 42, 4);
 
@@ -20,3 +22,8 @@ $tab-gradient: linear-gradient(
   rgba($color-secondary-highlight, 0.6) 80%,
   rgba($color-secondary, 0.6) 100%
 );
+
+:root {
+  --react-select-accent: #{rgba($color-primary, 0.5)};
+  --react-select-selected: #{rgba($color-tertiary, 0.8)};
+}
